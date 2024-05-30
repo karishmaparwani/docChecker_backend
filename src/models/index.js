@@ -1,5 +1,5 @@
-const dbConfig = require('../config/db.config')
-const mongoose = require('mongoose');
+const dbConfig = require("../config/db.config");
+const mongoose = require("mongoose");
 
 const db = {};
 
@@ -7,7 +7,8 @@ db.mongoose = mongoose;
 db.connUrl = dbConfig.url;
 
 // Import Models
-db.Users = require('./users.model');
-db.Roles = require('./roles.model');
+const { Users, ROLES } = require("./users.model");
+db.Users = Users
+db.ROLES = ROLES;
 
 module.exports = db;

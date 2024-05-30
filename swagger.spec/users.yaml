@@ -33,7 +33,7 @@ paths:
             application/json:
               schema:
                 type: string
-  "/updateCustomerProfile{username}":
+  "/updateCustomerProfile/{username}":
     put:
       summary: User Profile Update
       tags:

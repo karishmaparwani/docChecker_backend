@@ -97,7 +97,7 @@ definitions:
         type: string
       lastname:
         type: string
-      emailid:
+      emailId:
         type: string
       username:
         type: string
@@ -139,12 +139,12 @@ definitions:
         type: string
       password:
         type: string
-      emailid:
+      emailId:
         type: string
   ExpertSignUpSchema:
     type: object
     properties:
-      emailid:
+      emailId:
         type: string
       firstname:
         type: string

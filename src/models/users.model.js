@@ -1,20 +1,10 @@
 const mongoose = require("mongoose");
 
-const ProfileSchema = new mongoose.Schema({
-  profileSummary: String,
-  linkedInUrl: String,
-  yearsOfExperience: Number,
-  domainOfExpertise: String,
-  industry: String,
-});
-
-const ActivationStatusSchema = new mongoose.Schema({
-  status: {
-    type: String,
-    enum: ["ACCEPTED", "REJECTED", "PENDING"],
-  },
-  message: String,
-});
+const ROLES = {
+  ADMIN: "admin",
+  MODERATOR: "moderator",
+  CUSTOMER: "customer",
+};
 
 const UserSchema = new mongoose.Schema(
   {
@@ -24,13 +14,16 @@ const UserSchema = new mongoose.Schema(
     username: String,
     password: String,
     token: String,
-    role: String,
     profile: {
       profileSummary: String,
       linkedInUrl: String,
       yearsOfExperience: Number,
       domainOfExpertise: String,
       industry: String,
+    },
+    role: {
+      type: String,
+      enum: Object.values(ROLES),
     },
     activation_status: {
       status: {
@@ -59,4 +52,11 @@ UserSchema.method("toJSON", function () {
 
 const Users = mongoose.model("Users", UserSchema);
 
-module.exports = Users;
+// module.exports = Users;
+// exports.ROLES = ROLES;
+
+module.exports = {
+  Users,
+  ROLES
+}
+

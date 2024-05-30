@@ -37,8 +37,7 @@ verifyToken = async (req, res, next) => {
           message: "Unauthorized!",
         });
       }
-      req.userId = decoded.id;
-      req.role = decoded.role;
+      req.user = decoded;
       next();
     });
   } else {
@@ -49,7 +48,7 @@ verifyToken = async (req, res, next) => {
 };
 
 isAdmin = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
+  User.findById(req.user.userId).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
@@ -80,7 +79,7 @@ isAdmin = (req, res, next) => {
 };
 
 isModerator = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
+  User.findById(req.user.userId).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
       return;

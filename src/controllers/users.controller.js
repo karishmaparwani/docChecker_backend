@@ -1,4 +1,4 @@
-const { Users } = require("../models");
+const { Users, Roles: ROLES } = require("../models");
 // const { generateToken } = require('../utils/token');
 var bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
@@ -49,7 +49,7 @@ const expertSignUp = (req, res) => {
     username: req.body.username,
     emailId: req.body.emailId,
     password: bcrypt.hashSync(req.body.password, 8),
-    role: "moderator",
+    role: ROLES.MODERATOR,
     profileSummary: req.body.profileSummary,
     linkedInUrl: req.body.linkedInUrl,
     yearsOfExperience: req.body.yearsOfExperience,
@@ -82,7 +82,7 @@ const signUp = (req, res) => {
     lastname: req.body.lastname,
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password, 8),
-    role: "customer",
+    role: ROLES.CUSTOMER,
     emailId: req.body.emailId,
   });
 

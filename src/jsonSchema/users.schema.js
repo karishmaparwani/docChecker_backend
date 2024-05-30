@@ -29,11 +29,8 @@ exports.loginSchema = Joi.object({
 });
 
 const BASE_SCHEMA = Joi.object({
-  id: Joi.string().required(),
-  emailId: Joi.string().email().required(),
   firstname: Joi.string().required(),
   lastname: Joi.string().required(),
-  username: Joi.string().required(),
 });
 
 exports.updateUserProfile = BASE_SCHEMA.keys({

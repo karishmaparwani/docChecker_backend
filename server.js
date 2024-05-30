@@ -46,7 +46,7 @@ db.mongoose
 // app.use('/api/users', routes);
 // routes
 require("./src/routes/auth.routes")(app);
-require("./src/routes/roles.routes")(app);
+// require("./src/routes/roles.routes")(app);
 require("./src/routes/users.routes")(app);
 
 // Swagger setup
