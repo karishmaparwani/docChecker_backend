@@ -9,6 +9,11 @@ const AddReviewSchema = Joi.object({
   docType: Joi.string().required(),
 });
 
+const GetReviewByDocId = Joi.object({
+    docId: Joi.string().required().length(10)
+});
+
 module.exports = {
-    AddReviewSchema
+    AddReviewSchema,
+    GetReviewByDocId
 }

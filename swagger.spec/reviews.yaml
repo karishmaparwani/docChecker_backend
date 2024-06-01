@@ -30,6 +30,71 @@ paths:
               schema:
                 type: string
                 example: Bad Request
+  "/review/{docId}":
+    get:
+      summary: Customer Review Upload
+      tags:
+        - Customer
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: docId
+          description: Document/Review Id
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        "200":
+          description: Review Details By Document/Review Id.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/user/reviews":
+    get:
+      summary: Get All Customer Reviews
+      tags:
+        - Customer
+        - Moderator
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Review Details By Document/Review Id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/ReviewResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  # "/moderator/reviews":
+  #   get:
+  #     summary: Get All Reviews for Review
+  #     tags:
+  #       - Moderator
+  #     security:
+  #       - bearerAuth: []
+  #     responses:
+  #       "200":
+  #         description: Review Details By Document/Review Id.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/definitions/ReviewResponse'
+  #       "400":
+  #         description: Bad Request
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: string
 definitions:
   AddReviewSchema:
     type: object
@@ -52,3 +117,36 @@ definitions:
       docType: 
         type: string
         example: Product Requirement Document
+  ReviewResponse:
+    type: object
+    properties:
+      _id:
+        type: string
+      docId:
+        type: string
+      attachment_name:
+        type: string
+      attachment:
+        type: string
+      reasonForReview:
+        type: string
+      description:
+        type: string
+      docType:
+        type: string
+      review_status:
+        type: string
+      reviewer_id:
+        type: string
+      reviewer_details:
+        type: string
+      isActive:
+        type: string
+      createdBy:
+        type: string
+      updatedBy:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string

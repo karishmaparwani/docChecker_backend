@@ -10,7 +10,7 @@ const { updateExpertProfile, updateUserProfile, UserName } =
 
 const { verifyToken } = require("../middlewares").authJwt;
 const { verifyRole } = require("../middlewares");
-const { ROLES } = require("../models");
+const { ROLES } = require("../config/constants");
 
 module.exports = function (app) {
   // app.post("/api/auth/signup", User.create);

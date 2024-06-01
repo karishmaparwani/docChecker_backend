@@ -32,7 +32,6 @@ mongoose.connection.on("connected", async () => {
   }
 });
 
-
 const ProfileSchema = new mongoose.Schema({
   profileSummary: String,
   linkedInUrl: String,
@@ -146,9 +145,4 @@ UserSchema.method("toJSON", function () {
 
 const Users = mongoose.model("Users", UserSchema);
 
-module.exports = {
-  Users,
-  ROLES,
-  USER_ACTIVATION_STATUS,
-  UserSchema,
-};
+module.exports = Users;

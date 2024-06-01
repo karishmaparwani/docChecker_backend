@@ -36,6 +36,10 @@ const swaggerDefinition = {
       name: "Customer",
       description: "Customer API's",
     },
+    {
+      name: "Moderator",
+      description: "Moderator API's",
+    }
   ],
   components: {
     securitySchemes: {

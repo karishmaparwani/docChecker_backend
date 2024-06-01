@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const { UserSchema } = require("./users.model");
 
 const { REVIEW_STATUS } = require("../config/constants");
-const { required } = require("joi");
 
 const ReviewerSchema = new mongoose.Schema({
   firstname: {
@@ -29,6 +28,11 @@ ReviewerSchema.method("toJSON", function () {
 
 const ReviewSchema = new mongoose.Schema(
   {
+    docId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     attachment_name: {
       type: String,
       required: true,
