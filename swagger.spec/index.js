@@ -39,6 +39,10 @@ const swaggerDefinition = {
     {
       name: "Moderator",
       description: "Moderator API's",
+    },
+    {
+      name: "Admin",
+      description: "Admin API's",
     }
   ],
   components: {

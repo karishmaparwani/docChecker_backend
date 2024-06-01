@@ -5,7 +5,7 @@ const {
   validatePathParams,
 } = require("../middlewares/schemaValidator");
 const { checkDuplicateUsername } = require("../middlewares/verifySignUp");
-const { updateExpertProfile, updateUserProfile, UserName } =
+const { updateExpertProfile, updateUserProfile, UserName, ActivationStatus } =
   require("../jsonSchema").user;
 
 const { verifyToken } = require("../middlewares").authJwt;
@@ -52,9 +52,20 @@ module.exports = function (app) {
     "/api/deleteUser/:username",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER]),
+      verifyRole([ROLES.MODERATOR]),
       validatePathParams(UserName),
     ],
     User.deleteUser
   );
+
+  app.put(
+    "/api/user/:username",
+    [
+      verifyToken,
+      verifyRole([ROLES.ADMIN]),
+      validatePathParams(UserName),
+      validateBodyParams(ActivationStatus)
+    ],
+    User.updateUserStatus
+  )
 };

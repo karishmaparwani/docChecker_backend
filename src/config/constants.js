@@ -5,7 +5,7 @@ const ROLES = {
 };
 
 const USER_ACTIVATION_STATUS = {
-  ACCEPTED: "accepted",
+  APPROVED: "approved",
   REJECTED: "rejected",
   PENDING: "pending",
 };

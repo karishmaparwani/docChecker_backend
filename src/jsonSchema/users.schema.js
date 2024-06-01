@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { USER_ACTIVATION_STATUS } = require("../config/constants");
 
 exports.user = Joi.object({
   emailId: Joi.string().email().required(),
@@ -55,4 +56,14 @@ exports.isUserIdExists = Joi.object({
 
 exports.UserName = Joi.object({
   username: Joi.string().required(),
+});
+
+exports.ActivationStatus = Joi.object({
+  userId: Joi.string().required(),
+  status: Joi.string().required().valid('approved', 'rejected'),
+  message: Joi.string().when("status", {
+    is: USER_ACTIVATION_STATUS.REJECTED,
+    then: Joi.string().required(),
+    otherwise: Joi.forbidden(),
+  }),
 });

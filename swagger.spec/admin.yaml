@@ -1,0 +1,49 @@
+paths:
+  "/user/{username}":
+    put:
+      summary: Approve/Reject Moderator
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          description: Username of Approve/Rejecting User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User & Activaton Status details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/AppRejUserSchema"
+      responses:
+        "201":
+          description: Success Message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User (Approved/Rejected) Successfully
+        "400":
+          description: Bad Request
+definitions:
+  AppRejUserSchema:
+    type: object
+    properties:
+      status:
+        type: string
+        example: approved/rejected
+      userId:
+        type: string
+        example: 665ae0233d1ddd3abf27efdc
+      username:
+        type: string
+      message:
+        type: string
+        example: Reason For Rejection
