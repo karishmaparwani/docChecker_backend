@@ -154,14 +154,17 @@ definitions:
         type: string
       password:
         type: string
-      profileSummary:
-        type: string
-      linkedInUrl:
-        type: string
-      yearsOfExperience:
-        type: number
-        example: 3
-      domainOfExpertise:
-        type: string
-      industry:
-        type: string
+      profile:
+        type: object
+        properties:
+          profileSummary:
+            type: string
+          linkedInUrl:
+            type: string
+          yearsOfExperience:
+            type: number
+            example: 3
+          domainOfExpertise:
+            type: string
+          industry:
+            type: string

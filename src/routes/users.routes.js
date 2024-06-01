@@ -9,7 +9,7 @@ const { updateExpertProfile, updateUserProfile, UserName } =
   require("../jsonSchema").user;
 
 const { verifyToken } = require("../middlewares").authJwt;
-const { roleCheck } = require("../middlewares");
+const { verifyRole } = require("../middlewares");
 const { ROLES } = require("../models");
 
 module.exports = function (app) {
@@ -19,7 +19,7 @@ module.exports = function (app) {
     "/api/updateExpertProfile/:username",
     [
       verifyToken,
-      roleCheck([ROLES.MODERATOR]),
+      verifyRole([ROLES.MODERATOR]),
       validateBodyParams(updateExpertProfile),
       validatePathParams(UserName),
     ],
@@ -30,7 +30,7 @@ module.exports = function (app) {
     "/api/updateCustomerProfile/:username",
     [
       verifyToken,
-      roleCheck([ROLES.CUSTOMER]),
+      verifyRole([ROLES.CUSTOMER]),
       validateBodyParams(updateUserProfile),
       validatePathParams(UserName),
     ],
@@ -41,7 +41,7 @@ module.exports = function (app) {
     "/api/updateUsername",
     [
       verifyToken,
-      roleCheck([ROLES.MODERATOR, ROLES.CUSTOMER]),
+      verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER]),
       validateBodyParams(UserName),
       checkDuplicateUsername,
     ],
@@ -52,7 +52,7 @@ module.exports = function (app) {
     "/api/deleteUser/:username",
     [
       verifyToken,
-      roleCheck([ROLES.MODERATOR, ROLES.CUSTOMER]),
+      verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER]),
       validatePathParams(UserName),
     ],
     User.deleteUser

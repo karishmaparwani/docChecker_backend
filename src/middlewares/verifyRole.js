@@ -1,4 +1,4 @@
-const roleCheck = (allowedRoles) => {
+const verifyRole = (allowedRoles) => {
   return (req, res, next) => {
     if(allowedRoles.includes(req.user.role)){
         next();
@@ -8,4 +8,4 @@ const roleCheck = (allowedRoles) => {
   };
 };
 
-module.exports = roleCheck;
+module.exports = verifyRole;
