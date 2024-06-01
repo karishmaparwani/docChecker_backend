@@ -72,7 +72,7 @@ paths:
               schema: 
                 type: string
         "400":
-          description: User Not Found
+          description: Bad Request
           content:
             application/json:
               schema:

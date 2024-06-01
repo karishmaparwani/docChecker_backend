@@ -1,6 +1,37 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+mongoose.connection.on("connected", async () => {
+  // Check if the database is newly created
+  const isFreshDatabase = mongoose.connection.readyState === 1;
+
+  if (isFreshDatabase) {
+    // Database is newly created, create the default user
+
+    Users.findOne({ username: "admin" })
+      .then(async (data) => {
+        if (!data) {
+          try {
+            // Your logic to create the default user in the 'users' collection
+            const User = new Users({
+              firstname: "super",
+              lastname: "admin",
+              username: "admin",
+              password: "admin123",
+              emailId: "admin@example.com",
+              role: ROLES.ADMIN,
+            });
+            await User.save();
+            console.log("Admin user created successfully");
+          } catch (error) {
+            console.error("Error creating default user:", error);
+          }
+        }
+      })
+      .catch((error) => console.error("Error creating default user:", error));
+  }
+});
+
 const ROLES = {
   ADMIN: "admin",
   MODERATOR: "moderator",
@@ -13,13 +44,37 @@ const USER_ACTIVATION_STATUS = {
   PENDING: "pending",
 };
 
+const DOCUMENT_TYPES = [
+  "College Applicatin Essay",
+  "Letter of Recommendation",
+  "Resume",
+  "Product Requirement Document",
+];
+
 const ProfileSchema = new mongoose.Schema({
   profileSummary: String,
   linkedInUrl: String,
-  yearsOfExperience: Number,
-  domainOfExpertise: String,
+  yearsOfExperience: {
+    type: Number,
+    validate: {
+      validator: function (v) {
+        return v >= 0 && v <= 50;
+      },
+      message: "Experience must be between 0 and 50",
+    },
+  },
+  domainOfExpertise: {
+    type: String,
+    // validate: {
+    //   validator: function (arr) {
+    //     return arr.every((val) => DOCUMENT_TYPES.includes(val));
+    //   },
+    //   message: "Invalid document type in domainOfExpertise",
+    // },
+  },
   industry: String,
 });
+
 const UserSchema = new mongoose.Schema(
   {
     firstname: {
@@ -84,7 +139,7 @@ UserSchema.pre("save", function (next) {
     }
   }
 
-  if(!this.isActive){
+  if (!this.isActive) {
     switch (this.role) {
       case ROLES.MODERATOR:
         this.isActive = false;
@@ -113,4 +168,5 @@ module.exports = {
   Users,
   ROLES,
   USER_ACTIVATION_STATUS,
+  UserSchema
 };
