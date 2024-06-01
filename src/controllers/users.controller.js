@@ -1,7 +1,15 @@
-const { Users } = require("../models");
-// const { generateToken } = require('../utils/token');
+const { Users, ROLES } = require("../models");
 var bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
+
+function hashPassword(pwd) {
+  return bcrypt.hashSync(pwd, 8);
+}
+
+function isValidPassword(pwd, hash) {
+  return bcrypt.compareSync(pwd, hash);
+}
+
 const findAll = (req, res) => {
   Users.find({})
     .then((data) => {
@@ -12,12 +20,20 @@ const findAll = (req, res) => {
     });
 };
 
-const login = (req, res) => {
-  console.log("Input: ", req.body);
-  if (!req.body.username) {
-    return res.status(400).send("Username not found");
-  }
+function LoginDetails(data, token) {
+  return {
+    firstname: data.firstname,
+    lastname: data.lastname,
+    emailId: data.emailId,
+    username: data.username,
+    profile: { ...data.profile },
+    fullname: data.fullname,
+    accessToken: data.accessToken,
+    accessToken: token,
+  };
+}
 
+const login = (req, res) => {
   Users.findOne({
     username: req.body.username,
   })
@@ -25,39 +41,32 @@ const login = (req, res) => {
       if (!data) {
         res.status(200).send("User Not Found");
       } else {
-        // Convert Mongoose document to plain JavaScript object
-        const resp = data.toJSON();
-        const token = authJwt.createToken(data);
+        if (isValidPassword(req.body.password, data.password)) {
+          const token = authJwt.createToken(data);
 
-        resp["accessToken"] = token;
-        res.status(200).send(resp);
+          return res.status(200).send(LoginDetails(data.toJSON(), token));
+        }
+
+        res.status(401).send({ message: "UNAUTHORIZED" });
       }
     })
     .catch((e) => res.status(400).send(e.message));
 };
 
 const expertSignUp = (req, res) => {
-  let { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).send("Missing fields");
-  }
-
   const User = new Users({
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     username: req.body.username,
     emailId: req.body.emailId,
-    password: bcrypt.hashSync(req.body.password, 8),
-    role: "moderator",
-    profileSummary: req.body.profileSummary,
-    linkedInUrl: req.body.linkedInUrl,
-    yearsOfExperience: req.body.yearsOfExperience,
-    domainOfExpertise: req.body.domainOfExpertise,
-    industry: req.body.industry,
+    password: hashPassword(req.body.password),
+    role: ROLES.MODERATOR,
+    profile: { ...req.body.profile },
   });
 
-  Users.findOne({ username: username })
+  console.log(User.get("username"));
+
+  Users.findOne({ username: User.get("username") })
     .then((userData) => {
       if (userData) {
         throw new Error("Username already exists");
@@ -71,22 +80,16 @@ const expertSignUp = (req, res) => {
 };
 
 const signUp = (req, res) => {
-  let { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).send("Missing fields");
-  }
-
   const User = new Users({
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password, 8),
-    role: "customer",
+    password: hashPassword(req.body.password),
     emailId: req.body.emailId,
+    role: ROLES.CUSTOMER,
   });
 
-  Users.findOne({ username: username })
+  Users.findOne({ username: User.get("username") })
     .then((userData) => {
       if (userData) {
         throw new Error("Username already exists");
@@ -116,6 +119,9 @@ const updateProfile = (req, res) => {
         domainOfExpertise: req.body.domainOfExpertise,
         industry: req.body.industry,
       },
+    },
+    {
+      new: true,
     }
   )
     .then((data) => {

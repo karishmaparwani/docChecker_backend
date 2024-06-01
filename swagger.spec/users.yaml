@@ -33,7 +33,7 @@ paths:
             application/json:
               schema:
                 type: string
-  "/updateCustomerProfile{username}":
+  "/updateCustomerProfile/{username}":
     put:
       summary: User Profile Update
       tags:
@@ -136,17 +136,14 @@ definitions:
         type: string
       lastname:
         type: string
-      profile: 
-        type: object
-        properties:
-          profileSummary:
-            type: string
-          linkedInUrl:
-            type: string
-          yearsOfExperience:
-            type: number
-          domainOfExpertise:
-            type: string
-          industry:
-            type: string
+      profileSummary:
+        type: string
+      linkedInUrl:
+        type: string
+      yearsOfExperience:
+        type: number
+      domainOfExpertise:
+        type: string
+      industry:
+        type: string
       

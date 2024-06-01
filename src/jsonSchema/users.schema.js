@@ -29,31 +29,24 @@ exports.loginSchema = Joi.object({
 });
 
 const BASE_SCHEMA = Joi.object({
-  id: Joi.string().required(),
-  emailId: Joi.string().email().required(),
   firstname: Joi.string().required(),
   lastname: Joi.string().required(),
-  username: Joi.string().required(),
 });
 
 exports.updateUserProfile = BASE_SCHEMA.keys({
-  profile: Joi.object({
-    profileSummary: Joi.string().optional(),
-    linkedInUrl: Joi.string().optional(),
-    yearsOfExperience: Joi.number().optional(),
-    domainOfExpertise: Joi.string().optional(),
-    industry: Joi.string().optional(),
-  }),
+  profileSummary: Joi.string().optional(),
+  linkedInUrl: Joi.string().optional(),
+  yearsOfExperience: Joi.number().optional(),
+  domainOfExpertise: Joi.string().optional(),
+  industry: Joi.string().optional(),
 });
 
 exports.updateExpertProfile = BASE_SCHEMA.keys({
-  profile: Joi.object({
-    profileSummary: Joi.string().required(),
-    linkedInUrl: Joi.string().required(),
-    yearsOfExperience: Joi.number().required(),
-    domainOfExpertise: Joi.string().required(),
-    industry: Joi.string().required(),
-  }),
+  profileSummary: Joi.string().required(),
+  linkedInUrl: Joi.string().required(),
+  yearsOfExperience: Joi.number().required(),
+  domainOfExpertise: Joi.string().required(),
+  industry: Joi.string().required(),
 });
 
 exports.isUserIdExists = Joi.object({
