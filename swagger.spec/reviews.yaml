@@ -1,0 +1,54 @@
+paths:
+  "/review":
+    post:
+      summary: Customer Review Upload
+      tags:
+        - Customer
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Document details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/AddReviewSchema"
+      responses:
+        "201":
+          description: User Details with Auth token.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Review Created Successfully!
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+definitions:
+  AddReviewSchema:
+    type: object
+    properties: 
+      attachment_name: 
+        type: string
+        example: attachemnt name
+      attachment: 
+        type: string
+        example: attachment url
+      relevant: 
+        type: number
+        example: 5
+      reasonForReview: 
+        type: string
+        example: Sample reason for reviewing your document
+      description: 
+        type: string
+        example: Small description
+      docType: 
+        type: string
+        example: Product Requirement Document

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { ROLES, USER_ACTIVATION_STATUS } = require("../config/constants");
 
 mongoose.connection.on("connected", async () => {
   // Check if the database is newly created
@@ -32,24 +32,6 @@ mongoose.connection.on("connected", async () => {
   }
 });
 
-const ROLES = {
-  ADMIN: "admin",
-  MODERATOR: "moderator",
-  CUSTOMER: "customer",
-};
-
-const USER_ACTIVATION_STATUS = {
-  ACCEPTED: "accepted",
-  REJECTED: "rejected",
-  PENDING: "pending",
-};
-
-const DOCUMENT_TYPES = [
-  "College Applicatin Essay",
-  "Letter of Recommendation",
-  "Resume",
-  "Product Requirement Document",
-];
 
 const ProfileSchema = new mongoose.Schema({
   profileSummary: String,
@@ -168,5 +150,5 @@ module.exports = {
   Users,
   ROLES,
   USER_ACTIVATION_STATUS,
-  UserSchema
+  UserSchema,
 };

@@ -1,43 +1,27 @@
-class Reviewcontroller {
-  async store(req, res) {
-    return res.json();
+const { REVIEW_STATUS } = require("../config/constants");
+const { Reviews } = require("../models");
+
+exports.create = (req, res) => {
+  const obj = {
+    attachment_name: req.body.attachment_name,
+    attachment: req.body.attachment,
+    relevantExp: req.body.relevantExp,
+    reasonForReview: req.body.reasonForReview,
+    description: req.body.description,
+    docType: req.body.docType,
+    review_status: REVIEW_STATUS.INPROGRESS,
   }
 
-  async index(req, res) {
-    return res.json();
-  }
+  obj.createdBy = obj.updatedBy = req.user.userId;
 
-  async create(req, res) {
-    return res.json();
-  }
+  const Review = new Reviews(obj);
+  console.log(Review);
+  console.log(Review.toJSON());
 
-  async show(req, res) {
-    return res.json();
-  }
-
-  async edit(req, res) {
-    return res.json();
-  }
-
-  async update(req, res) {
-    return res.json();
-  }
-
-  async destroy(req, res) {
-    return res.json();
-  }
-
-  async view(req, res) {
-    return res.json();
-  }
-
-  async grid(req, res) {
-    return res.json();
-  }
-
-  async form(req, res) {
-    return res.json();
-  }
-}
-
-export default new Reviewcontroller();
+  Review.save(Review)
+    .then((data) => res.status(201).send(data))
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send(error.message)
+    });
+};

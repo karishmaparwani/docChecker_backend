@@ -48,6 +48,7 @@ db.mongoose
 require("./src/routes/auth.routes")(app);
 // require("./src/routes/roles.routes")(app);
 require("./src/routes/users.routes")(app);
+require("./src/routes/reviews.routes")(app);
 
 // Swagger setup
 const { swaggerSpec } = require('./swagger.spec');

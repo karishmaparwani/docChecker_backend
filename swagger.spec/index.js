@@ -32,6 +32,10 @@ const swaggerDefinition = {
       name: "Sign In",
       description: "All User Signup to DocChecker",
     },
+    {
+      name: "Customer",
+      description: "Customer API's",
+    },
   ],
   components: {
     securitySchemes: {
