@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { UserSchema } = require("./users.model");
+const Users = require("./users.model");
 
 const { REVIEW_STATUS } = require("../config/constants");
 
@@ -60,19 +60,23 @@ const ReviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    review_status: {
+    reviewStatus: {
       type: String,
       enum: Object.values(REVIEW_STATUS),
     },
-    reviewer_id: {
+    reviewerId: {
       type: mongoose.ObjectId,
       required: false,
       default: null,
     },
-    reviewer_details: {
-      type: ReviewerSchema,
-      required: false,
-      default: null,
+    // reviewerDetails: {
+    //   type: Users.schema,
+    //   required: false,
+    //   default: null,
+    // },
+    reviewerUsername: {
+      type: String,
+      required: true,
     },
     isActive: {
       type: Boolean,

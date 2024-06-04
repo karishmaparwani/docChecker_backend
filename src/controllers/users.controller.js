@@ -33,12 +33,14 @@ function LoginDetails(data, token) {
     fullname: data.fullname,
     accessToken: data.accessToken,
     accessToken: token,
+    role:data.role,
   };
 }
 
 const login = (req, res) => {
   Users.findOne({
     username: req.body.username,
+    isActive: true,
   })
     .then((data) => {
       if (!data) {
@@ -66,8 +68,6 @@ const expertSignUp = (req, res) => {
     role: ROLES.MODERATOR,
     profile: { ...req.body.profile },
   });
-
-  console.log(User);
 
   Users.findOne({ username: User.get("username") })
     .then((userData) => {

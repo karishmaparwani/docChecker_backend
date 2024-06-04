@@ -33,6 +33,10 @@ const swaggerDefinition = {
       description: "All User Signup to DocChecker",
     },
     {
+      name: "User Profile",
+      description: "All User Signup to DocChecker",
+    },
+    {
       name: "Customer",
       description: "Customer API's",
     },

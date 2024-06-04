@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const ExpertsSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
+      ref:'Users',
       required: true,
       unique: true,
     },
@@ -37,6 +38,12 @@ ExpertsSchema.pre("save", (next) => {
   this.pending = this.assigned - this.submitted;
   next();
 });
+
+// ExpertsSchema.pre("updateOne", (next) => {
+//   this.pending = this.assigned - this.submitted;
+//   next();
+// });
+
 const Experts = mongoose.model("Experts", ExpertsSchema);
 
 module.exports = Experts;

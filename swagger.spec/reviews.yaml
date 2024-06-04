@@ -75,26 +75,37 @@ paths:
             application/json:
               schema:
                 type: string
-  # "/moderator/reviews":
-  #   get:
-  #     summary: Get All Reviews for Review
-  #     tags:
-  #       - Moderator
-  #     security:
-  #       - bearerAuth: []
-  #     responses:
-  #       "200":
-  #         description: Review Details By Document/Review Id.
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/definitions/ReviewResponse'
-  #       "400":
-  #         description: Bad Request
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: string
+  "/review/submit":
+    put:
+      summary: Submit Review
+      tags:
+        - Moderator
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: DocId for the review Document
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                docId:
+                  type: string
+                  example: 3ny9b4lab1
+      responses:
+        "200":
+          description: Submitted Review Details
+          content:
+            application/json:
+              schema: 
+                $ref: "#/definitions/ReviewResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
 definitions:
   AddReviewSchema:
     type: object
@@ -105,7 +116,7 @@ definitions:
       attachment: 
         type: string
         example: attachment url
-      relevant: 
+      relevantExp: 
         type: number
         example: 5
       reasonForReview: 
@@ -128,17 +139,19 @@ definitions:
         type: string
       attachment:
         type: string
+      relevantExp:
+        type: string
       reasonForReview:
         type: string
       description:
         type: string
       docType:
         type: string
-      review_status:
+      reviewStatus:
         type: string
-      reviewer_id:
+      reviewerId:
         type: string
-      reviewer_details:
+      reviewerUsername:
         type: string
       isActive:
         type: string

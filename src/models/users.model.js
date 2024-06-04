@@ -122,7 +122,6 @@ UserSchema.pre("save", function (next) {
   }
 
   if (!this.isActive) {
-    console.log("active: ", this.isActive, this.role)
     switch (this.role) {
       case ROLES.MODERATOR:
         this.isActive = false;
