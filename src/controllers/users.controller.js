@@ -1,6 +1,9 @@
-const { Users, ROLES } = require("../models");
-var bcrypt = require("bcryptjs");
+const { Users } = require("../models");
+const bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
+const { USER_ACTIVATION_STATUS } = require("../config/constants");
+const Experts = require("./experts.controller");
+const { ROLES } = require("../config/constants");
 
 function hashPassword(pwd) {
   return bcrypt.hashSync(pwd, 8);
@@ -30,12 +33,14 @@ function LoginDetails(data, token) {
     fullname: data.fullname,
     accessToken: data.accessToken,
     accessToken: token,
+    role:data.role,
   };
 }
 
 const login = (req, res) => {
   Users.findOne({
     username: req.body.username,
+    isActive: true,
   })
     .then((data) => {
       if (!data) {
@@ -63,8 +68,6 @@ const expertSignUp = (req, res) => {
     role: ROLES.MODERATOR,
     profile: { ...req.body.profile },
   });
-
-  console.log(User.get("username"));
 
   Users.findOne({ username: User.get("username") })
     .then((userData) => {
@@ -161,7 +164,7 @@ const updateUserName = (req, res) => {
 
 const deleteUser = (req, res) => {
   Users.findOneAndUpdate(
-    { username: username },
+    { username: req.params.username },
     {
       $set: {
         isActive: false,
@@ -181,6 +184,42 @@ const deleteUser = (req, res) => {
     });
 };
 
+const updateUserStatus = (req, res) => {
+  const { username } = req.params;
+  let { userId, status, message } = req.body;
+  let isActive = false;
+
+  if (status.toLowerCase() === USER_ACTIVATION_STATUS.APPROVED) {
+    status = USER_ACTIVATION_STATUS.APPROVED;
+    isActive = true;
+  } else status = USER_ACTIVATION_STATUS.REJECTED;
+
+  Users.updateOne(
+    { username },
+    {
+      activationStatus: {
+        status,
+        message,
+      },
+      isActive,
+    },
+    { new: true }
+  )
+    .then(() => {
+      if (status === USER_ACTIVATION_STATUS.REJECTED) return;
+
+      return Experts.create(userId, username);
+    })
+    .then((data) =>
+      res.status(201).send({
+        message: `User ${
+          status.charAt(0).toUpperCase() + status.slice(1)
+        } Successfully`,
+      })
+    )
+    .catch((error) => res.status(400).send({ message: error.message }));
+};
+
 const updatePassword = (req, res) => {};
 
 const updateResume = (req, res) => {};
@@ -192,4 +231,5 @@ exports.signUp = signUp;
 exports.signOut = signOut;
 exports.updateProfile = updateProfile;
 exports.updateUserName = updateUserName;
+exports.updateUserStatus = updateUserStatus;
 exports.deleteUser = deleteUser;

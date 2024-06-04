@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { ROLES, USER_ACTIVATION_STATUS } = require("../config/constants");
+const  bcrypt = require("bcryptjs");
 
 mongoose.connection.on("connected", async () => {
   // Check if the database is newly created
@@ -17,7 +18,7 @@ mongoose.connection.on("connected", async () => {
               firstname: "super",
               lastname: "admin",
               username: "admin",
-              password: "admin123",
+              password: bcrypt.hashSync('admin123', 8),
               emailId: "admin@example.com",
               role: ROLES.ADMIN,
             });
@@ -31,25 +32,6 @@ mongoose.connection.on("connected", async () => {
       .catch((error) => console.error("Error creating default user:", error));
   }
 });
-
-const ROLES = {
-  ADMIN: "admin",
-  MODERATOR: "moderator",
-  CUSTOMER: "customer",
-};
-
-const USER_ACTIVATION_STATUS = {
-  ACCEPTED: "accepted",
-  REJECTED: "rejected",
-  PENDING: "pending",
-};
-
-const DOCUMENT_TYPES = [
-  "College Applicatin Essay",
-  "Letter of Recommendation",
-  "Resume",
-  "Product Requirement Document",
-];
 
 const ProfileSchema = new mongoose.Schema({
   profileSummary: String,
@@ -108,7 +90,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(ROLES),
     },
-    activation_status: {
+    activationStatus: {
       status: {
         type: String,
         enum: Object.values(USER_ACTIVATION_STATUS),
@@ -117,7 +99,6 @@ const UserSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
     },
   },
   {
@@ -126,16 +107,17 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", function (next) {
-  if (!this.activation_status.status) {
+  if (!this.activationStatus.status) {
     switch (this.role) {
       case ROLES.MODERATOR:
-        this.activation_status.status = USER_ACTIVATION_STATUS.PENDING;
+        this.activationStatus.status = USER_ACTIVATION_STATUS.PENDING;
         break;
+      case ROLES.ADMIN:
       case ROLES.CUSTOMER:
-        this.activation_status.status = USER_ACTIVATION_STATUS.ACCEPTED;
+        this.activationStatus.status = USER_ACTIVATION_STATUS.APPROVED;
         break;
       default:
-        this.activation_status.status = USER_ACTIVATION_STATUS.PENDING;
+        this.activationStatus.status = USER_ACTIVATION_STATUS.PENDING;
     }
   }
 
@@ -143,9 +125,6 @@ UserSchema.pre("save", function (next) {
     switch (this.role) {
       case ROLES.MODERATOR:
         this.isActive = false;
-        break;
-      case ROLES.CUSTOMER:
-        this.isActive = true;
         break;
       default:
         this.isActive = true;
@@ -164,9 +143,4 @@ UserSchema.method("toJSON", function () {
 
 const Users = mongoose.model("Users", UserSchema);
 
-module.exports = {
-  Users,
-  ROLES,
-  USER_ACTIVATION_STATUS,
-  UserSchema
-};
+module.exports = Users;

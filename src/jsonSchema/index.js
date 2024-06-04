@@ -1,3 +1,7 @@
-const user = require('./users.schema');
+const user = require("./users.schema");
+const reviews = require("./reviews.schema");
 
-exports.user = user;
+module.exports = {
+  user,
+  reviews,
+};

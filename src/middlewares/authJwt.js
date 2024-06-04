@@ -12,6 +12,7 @@ createToken = (payload) => {
       userId: id,
       username,
       role,
+      payload
     },
     config.secret
   );
@@ -20,13 +21,12 @@ createToken = (payload) => {
 };
 
 verifyToken = async (req, res, next) => {
-  console.log(req.headers);
   let token = req.headers.authorization;
 
   if (!token) {
     return res.status(403).send({ message: "No token provided!" });
   }
-  console.log("Initial Token: ", token)
+
   if (token?.startsWith("Bearer")) {
     token = token.replace("Bearer ", "");
 
