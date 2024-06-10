@@ -1,7 +1,7 @@
 const { REVIEW_STATUS, ROLES } = require("../config/constants");
 const { Reviews, Experts } = require("../models");
 const experts = require("./experts.controller");
-
+const mongoose = require("mongoose");
 function generateUniqueKey() {
   const currentTimestamp = Date.now();
   const randomNumber = Math.floor(Math.random() * 1000);
@@ -11,6 +11,62 @@ function generateUniqueKey() {
   const modifiedNumber = uniqueNumber * Math.random() * 1000;
 
   return modifiedNumber.toString(36).slice(0, 10);
+}
+
+async function getActiveReviewsByUserWithActiveComments(matchingKey, userId = "") {
+  try {    
+    const activeReviews = await Reviews.aggregate([
+      // Stage 1: Match reviews with isActive: true and createdBy: userId
+      {
+        $match: {
+          isActive: true,
+          [matchingKey]: new mongoose.Types.ObjectId(userId), // Ensure userId is an ObjectId
+        },
+      },
+      // Stage 2: Filter the comments array to include only active comments
+      {
+        $addFields: {
+          comments: {
+            $filter: {
+              input: "$comments",
+              as: "comment",
+              cond: { $eq: ["$$comment.isActive", true] },
+            },
+          },
+        },
+      },
+      // Stage 3: Optional, project only the necessary fields
+      {
+        $project: {
+          // _id: 1,
+          docId: 1,
+          attachment_name: 1,
+          attachment: 1,
+          relevantExp: 1,
+          reasonForReview: 1,
+          description: 1,
+          docType: 1,
+          reviewStatus: 1,
+          reviewerId: 1,
+          reviewerUsername: 1,
+          comments: 1,
+          // isActive: 1,
+          createdBy: 1,
+          updatedBy: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+
+    return activeReviews;
+  } catch (error) {
+    console.error(
+      "Error fetching active reviews by user with active comments:",
+      error
+    );
+    throw error;
+  }
 }
 
 async function findExpert(pendingCount = 0) {
@@ -58,7 +114,7 @@ const insertReview = (input, expert, reqUserId) => {
   });
 };
 
-exports.create = async (req, res) => {
+exports.createReview = async (req, res) => {
   findExpert()
     .then((expert) => insertReview(req.body, expert, req.user.userId))
     .then((data) => experts.update(expert, data))
@@ -95,20 +151,13 @@ exports.submitReview = (req, res) => {
 };
 
 exports.getReviewsByCustId = (req, res) => {
-  Reviews.find({
-    createdBy: req.user.userId,
-    isActive: true,
-  })
+  getActiveReviewsByUserWithActiveComments("createdBy", req.user.userId)
     .then((data) => res.status(200).send(data))
     .catch((error) => res.status(200).send(error.message));
 };
 
 exports.getReviewsByModId = (req, res) => {
-  Reviews.find({
-    reviewerId: req.user.userId,
-    isActive: true,
-    // reviewStatus: { $in: req.body.review_status },
-  })
+  getActiveReviewsByUserWithActiveComments("reviewerId", req.user.userId)
     .then((data) => res.status(200).send(data))
     .catch((error) => res.status(200).send(error.message));
 };
@@ -120,6 +169,51 @@ exports.getUserReviews = (req, res) => {
   return this.getReviewsByModId(req, res);
 };
 
+
+
+
+// function getReviewsWithActiveComments(matchingKey, value) {
+//   return new Promise((resolve, reject) => {
+//     Reviews.aggregate([
+//       // Stage 1: Match reviews created by the specified user
+//       {
+//         $match: {
+//           [matchingKey]: value,
+//           isActive: true,
+//         },
+//       },
+//       // Stage 2: Project the necessary fields and filter active comments
+//       {
+//         $project: {
+//           docId: 1,
+//           attachment_name: 1,
+//           attachment: 1,
+//           relevantExp: 1,
+//           reasonForReview: 1,
+//           description: 1,
+//           docType: 1,
+//           reviewStatus: 1,
+//           reviewerId: 1,
+//           reviewerUsername: 1,
+//           isActive: 1,
+//           createdBy: 1,
+//           updatedBy: 1,
+//           createdAt: 1,
+//           updatedAt: 1,
+//           comments: {
+//             $filter: {
+//               input: "$comments",
+//               as: "comment",
+//               cond: { $eq: ["$$comment.isActive", true] },
+//             },
+//           },
+//         },
+//       },
+//     ])
+//       .then((data) => resolve(data))
+//       .catch((error) => reject(error));
+//   });
+// }
 /**
  * 
  const expert = await findExpert();

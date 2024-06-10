@@ -1,7 +1,7 @@
 // const { verifySignUp } = require("../middlewares");
 const User = require('../controllers/users.controller');
 const { validateBodyParams } = require('../middlewares').jsonValidator;
-const { checkDuplicateUsernameOrEmail } = require('../middlewares').verifySignUp;
+const { checkDuplicateUsernameOrEmail, checkDuplicateUsername } = require('../middlewares').verifySignUp;
 const { user, loginSchema, moderator } = require('../jsonSchema').user;
 
 module.exports = function (app) {

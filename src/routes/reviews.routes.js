@@ -19,7 +19,7 @@ module.exports = function (app) {
       verifyRole([ROLES.CUSTOMER]),
       validateBodyParams(AddReviewSchema),
     ],
-    Reviews.create
+    Reviews.createReview
   );
 
   app.get(

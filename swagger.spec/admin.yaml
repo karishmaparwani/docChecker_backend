@@ -36,14 +36,12 @@ definitions:
   AppRejUserSchema:
     type: object
     properties:
-      status:
-        type: string
-        example: approved/rejected
       userId:
         type: string
         example: 665ae0233d1ddd3abf27efdc
-      username:
+      status:
         type: string
+        example: approved/rejected
       message:
         type: string
         example: Reason For Rejection

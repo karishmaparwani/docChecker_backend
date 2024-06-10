@@ -56,10 +56,10 @@ paths:
                 type: string
   "/user/reviews":
     get:
-      summary: Get All Customer Reviews
+      summary: Get All Reviews
       tags:
         - Customer
-        - Moderator
+        - Expert
       security:
         - bearerAuth: []
       responses:
@@ -79,7 +79,7 @@ paths:
     put:
       summary: Submit Review
       tags:
-        - Moderator
+        - Expert
       security:
         - bearerAuth: []
       requestBody:
@@ -153,6 +153,10 @@ definitions:
         type: string
       reviewerUsername:
         type: string
+      comments:
+        type: array
+        items:
+          $ref: "#/definitions/CommentsInputSchema"
       isActive:
         type: string
       createdBy:
