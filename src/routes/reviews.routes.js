@@ -26,7 +26,7 @@ module.exports = function (app) {
     "/api/review/:docId",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER]),
+      verifyRole([ROLES.EXPERT, ROLES.CUSTOMER]),
       validatePathParams(GetReviewByDocId),
     ],
     Reviews.getReviewByDocId
@@ -34,7 +34,7 @@ module.exports = function (app) {
 
   app.get(
     "/api/user/reviews",
-    [verifyToken, verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER])],
+    [verifyToken, verifyRole([ROLES.EXPERT, ROLES.CUSTOMER])],
     Reviews.getUserReviews
   );
 
@@ -42,7 +42,7 @@ module.exports = function (app) {
     "/api/review/submit",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validateBodyParams(SubmitReview),
     ],
     Reviews.submitReview

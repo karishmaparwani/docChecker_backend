@@ -19,7 +19,7 @@ module.exports = function (app) {
     "/api/updateExpertProfile/:username",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validateBodyParams(updateExpertProfile),
       validatePathParams(UserName),
     ],
@@ -41,7 +41,7 @@ module.exports = function (app) {
     "/api/updateUsername",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR, ROLES.CUSTOMER]),
+      verifyRole([ROLES.EXPERT, ROLES.CUSTOMER]),
       validateBodyParams(UserName),
       checkDuplicateUsername,
     ],
@@ -52,7 +52,7 @@ module.exports = function (app) {
     "/api/deleteUser/:username",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validatePathParams(UserName),
     ],
     User.deleteUser
