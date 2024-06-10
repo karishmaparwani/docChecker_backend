@@ -50,6 +50,7 @@ require("./src/routes/auth.routes")(app);
 require("./src/routes/users.routes")(app);
 require("./src/routes/reviews.routes")(app);
 require("./src/routes/comments.routes")(app);
+require("./src/routes/s3.routes")(app);
 
 // Swagger setup
 const { swaggerSpec } = require('./swagger.spec');
