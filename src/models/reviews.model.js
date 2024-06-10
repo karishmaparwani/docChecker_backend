@@ -1,30 +1,58 @@
 const mongoose = require("mongoose");
-const Users = require("./users.model");
-
 const { REVIEW_STATUS } = require("../config/constants");
 
-const ReviewerSchema = new mongoose.Schema({
-  firstname: {
-    type: String,
+const HighlightAreaSchema = new mongoose.Schema({
+  height: {
+    type: Number,
+    required: true
   },
-  lastname: {
-    type: String,
+  left: {
+    type: Number,
+    required: true
   },
-  reviewerEmailId: {
-    type: String,
+  pageIndex: {
+    type: Number,
+    required: true
   },
-  username: {
-    type: String,
+  top: {
+    type: Number,
+    required: true
   },
+  width: {
+    type: Number,
+    required: true
+  }
 });
 
-ReviewerSchema.method("toJSON", function () {
-  const { ...object } = this.toObject();
-
-  object.fullname = object.firstname + " " + object.lastname;
-
-  return object;
-});
+const CommentsSchema = new mongoose.Schema(
+  {
+    commenterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
+    orderId:{
+      type: Number,
+      required:true,
+    },
+    comment: {
+      type: String,
+      required: true,
+    },
+    highlightAreas:[HighlightAreaSchema],
+    quote:{
+      type:String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const ReviewSchema = new mongoose.Schema(
   {
@@ -66,7 +94,8 @@ const ReviewSchema = new mongoose.Schema(
     },
     reviewerId: {
       type: mongoose.ObjectId,
-      required: false,
+      ref: "Users",
+      required: true,
       default: null,
     },
     // reviewerDetails: {
@@ -78,6 +107,7 @@ const ReviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    comments: [CommentsSchema],
     isActive: {
       type: Boolean,
       default: true,

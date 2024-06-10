@@ -44,7 +44,7 @@ const login = (req, res) => {
   })
     .then((data) => {
       if (!data) {
-        res.status(200).send("User Not Found");
+        res.status(404).send("User Not Found");
       } else {
         if (isValidPassword(req.body.password, data.password)) {
           const token = authJwt.createToken(data);
