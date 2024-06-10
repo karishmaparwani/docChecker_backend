@@ -109,7 +109,7 @@ const UserSchema = new mongoose.Schema(
 UserSchema.pre("save", function (next) {
   if (!this.activationStatus.status) {
     switch (this.role) {
-      case ROLES.MODERATOR:
+      case ROLES.EXPERT:
         this.activationStatus.status = USER_ACTIVATION_STATUS.PENDING;
         break;
       case ROLES.ADMIN:
@@ -123,7 +123,7 @@ UserSchema.pre("save", function (next) {
 
   if (!this.isActive) {
     switch (this.role) {
-      case ROLES.MODERATOR:
+      case ROLES.EXPERT:
         this.isActive = false;
         break;
       default:

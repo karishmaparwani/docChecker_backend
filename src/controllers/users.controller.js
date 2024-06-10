@@ -65,7 +65,7 @@ const expertSignUp = (req, res) => {
     username: req.body.username,
     emailId: req.body.emailId,
     password: hashPassword(req.body.password),
-    role: ROLES.MODERATOR,
+    role: ROLES.EXPERT,
     profile: { ...req.body.profile },
   });
 

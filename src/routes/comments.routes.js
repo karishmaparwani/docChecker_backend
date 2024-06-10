@@ -17,7 +17,7 @@ module.exports = function (app) {
     "/api/review/:docId/comment",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validatePathParams(GetReviewByDocId),
       validateBodyParams(Comment),
     ],
@@ -28,7 +28,7 @@ module.exports = function (app) {
     "/api/review/:docId/comment/:commentId",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validatePathParams(isValidDocIdCommId),
       validateBodyParams(UpdateComment),
     ],
@@ -39,7 +39,7 @@ module.exports = function (app) {
     "/api/review/:docId/comment/:commentId",
     [
       verifyToken,
-      verifyRole([ROLES.MODERATOR]),
+      verifyRole([ROLES.EXPERT]),
       validatePathParams(isValidDocIdCommId),
     ],
     Comments.deleteComment
