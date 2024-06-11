@@ -32,6 +32,68 @@ paths:
                     example: User (Approved/Rejected) Successfully
         "400":
           description: Bad Request
+  "/users":
+    get:
+      summary: Get All Users
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: boolean
+          required: false
+          description: Filter users by their active status
+        - in: query
+          name: actStatus
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+          required: false
+          description: Filter users by their activation status
+      responses:
+        "201":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        firstname:
+                          type: string
+                        lastname:
+                          type: string
+                        emailId:
+                          type: string
+                        username:
+                          type: string
+                        role:
+                          type: string
+                        activationStatus:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                            message:
+                              type: string
+                        isActive:
+                          type: boolean
+                        profile:
+                          $ref: "#/definitions/userProfileSchema"
+        "400":
+          description: Bad Request
+
 definitions:
   AppRejUserSchema:
     type: object

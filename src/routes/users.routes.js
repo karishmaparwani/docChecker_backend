@@ -15,6 +15,8 @@ const { ROLES } = require("../config/constants");
 module.exports = function (app) {
   // app.post("/api/auth/signup", User.create);
 
+  app.get("/api/users",[verifyToken, verifyRole([ROLES.ADMIN])], User.findAll);
+
   app.put(
     "/api/updateExpertProfile/:username",
     [

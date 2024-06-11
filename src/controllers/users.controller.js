@@ -2,7 +2,7 @@ const { Users } = require("../models");
 const bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
 const { USER_ACTIVATION_STATUS } = require("../config/constants");
-const Experts = require("./experts.controller");
+const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
 
 function hashPassword(pwd) {
@@ -14,42 +14,50 @@ function isValidPassword(pwd, hash) {
 }
 
 const findAll = (req, res) => {
-  Users.find({})
+  const input = {
+    role: ROLES.EXPERT,
+  };
+
+  if (req.query.status) {
+    input["isActive"] = {
+      status: req.query.status,
+    };
+  }
+
+  if (req.query.actStatus) {
+    input["activationStatus.status"] = req.query.actStatus;
+  }
+
+  Users.find(input)
+    .select("-password -_id") // Exclude the password field
     .then((data) => {
-      res.status(200).send(data);
+      res.status(200).send({
+        total: data.length,
+        data,
+      });
     })
     .catch((e) => {
       res.status(400).send(e.message);
     });
 };
 
-function LoginDetails(data, token) {
-  return {
-    firstname: data.firstname,
-    lastname: data.lastname,
-    emailId: data.emailId,
-    username: data.username,
-    profile: { ...data.profile },
-    fullname: data.fullname,
-    accessToken: data.accessToken,
-    accessToken: token,
-    role:data.role,
-  };
-}
-
 const login = (req, res) => {
   Users.findOne({
     username: req.body.username,
     isActive: true,
   })
+    .select("-_id -isActive -createdAt -updatedAt -profile._id")
     .then((data) => {
       if (!data) {
         res.status(404).send("User Not Found");
       } else {
         if (isValidPassword(req.body.password, data.password)) {
-          const token = authJwt.createToken(data);
+          data = data.toJSON();
+          data.accessToken = authJwt.createToken(data);
 
-          return res.status(200).send(LoginDetails(data.toJSON(), token));
+          delete data.password;
+
+          return res.status(200).send(data);
         }
 
         res.status(401).send({ message: "UNAUTHORIZED" });
@@ -208,7 +216,7 @@ const updateUserStatus = (req, res) => {
     .then(() => {
       if (status === USER_ACTIVATION_STATUS.REJECTED) return;
 
-      return Experts.create(userId, username);
+      return ExpertsController.create(userId, username);
     })
     .then((data) =>
       res.status(201).send({

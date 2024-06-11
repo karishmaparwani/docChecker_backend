@@ -116,18 +116,7 @@ definitions:
       accessToken:
         type: string
       profile: 
-        type: object
-        properties:
-          profileSummary:
-            type: string
-          linkedInUrl:
-            type: string
-          yearsOfExperience:
-            type: number
-          domainOfExpertise:
-            type: string
-          industry:
-            type: string
+        $ref: "#/definitions/userProfileSchema"
   signUpSchema:
     type: object
     properties:
@@ -155,16 +144,4 @@ definitions:
       password:
         type: string
       profile:
-        type: object
-        properties:
-          profileSummary:
-            type: string
-          linkedInUrl:
-            type: string
-          yearsOfExperience:
-            type: number
-            example: 3
-          domainOfExpertise:
-            type: string
-          industry:
-            type: string
+        $ref: "#/definitions/userProfileSchema"

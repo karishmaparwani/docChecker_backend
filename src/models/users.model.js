@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const { ROLES, USER_ACTIVATION_STATUS } = require("../config/constants");
-const  bcrypt = require("bcryptjs");
+const { ROLES, USER_ACTIVATION_STATUS, DOMAIN_VALUES, INDUSTRY_VALUES } = require("../config/constants");
+const bcrypt = require("bcryptjs");
 
 mongoose.connection.on("connected", async () => {
   // Check if the database is newly created
@@ -18,7 +18,7 @@ mongoose.connection.on("connected", async () => {
               firstname: "super",
               lastname: "admin",
               username: "admin",
-              password: bcrypt.hashSync('admin123', 8),
+              password: bcrypt.hashSync("admin123", 8),
               emailId: "admin@example.com",
               role: ROLES.ADMIN,
             });
@@ -46,15 +46,15 @@ const ProfileSchema = new mongoose.Schema({
     },
   },
   domainOfExpertise: {
-    type: String,
-    // validate: {
-    //   validator: function (arr) {
-    //     return arr.every((val) => DOCUMENT_TYPES.includes(val));
-    //   },
-    //   message: "Invalid document type in domainOfExpertise",
-    // },
+    type: [String],
+    enum: DOMAIN_VALUES,
+    required: true,
   },
-  industry: String,
+  industry: {
+    type: [String],
+    enum: INDUSTRY_VALUES,
+    required: true,
+  },
 });
 
 const UserSchema = new mongoose.Schema(

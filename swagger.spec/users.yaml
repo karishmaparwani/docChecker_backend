@@ -143,7 +143,22 @@ definitions:
       yearsOfExperience:
         type: number
       domainOfExpertise:
-        type: string
+        type: array
+        items:
+          type: string
+          enum:
+            - Product Requirement Document
+            - Resume
+            - LOR
+            - Essay
       industry:
-        type: string
+        type: array
+        items:
+          type: string
+          enum:
+            - Software
+            - Hardware
+            - Pharmaceutical
+            - Banking
+            - Consulting
       
