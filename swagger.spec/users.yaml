@@ -132,10 +132,6 @@ definitions:
   userProfileSchema:
     type: object
     properties:
-      firstname:
-        type: string
-      lastname:
-        type: string
       profileSummary:
         type: string
       linkedInUrl:
@@ -161,4 +157,5 @@ definitions:
             - Pharmaceutical
             - Banking
             - Consulting
-      
+      resume:
+        type: string

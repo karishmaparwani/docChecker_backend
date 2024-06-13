@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
-const { ROLES, USER_ACTIVATION_STATUS, DOMAIN_VALUES, INDUSTRY_VALUES } = require("../config/constants");
+const {
+  ROLES,
+  USER_ACTIVATION_STATUS,
+  DOMAIN_VALUES,
+  INDUSTRY_VALUES,
+  URL_REGEX,
+} = require("../config/constants");
 const bcrypt = require("bcryptjs");
 
 mongoose.connection.on("connected", async () => {
@@ -54,6 +60,33 @@ const ProfileSchema = new mongoose.Schema({
     type: [String],
     enum: INDUSTRY_VALUES,
     required: true,
+  },
+  resume: {
+    type: String,
+    default: null,
+    validate: [
+      {
+        validator: function (value) {
+          console.log("Role:", this.role);
+          console.log("Resume:", value);
+          if (this.role === ROLES.EXPERT && !value) {
+            return false;
+          }
+          return true;
+        },
+        message: "Resume is required for experts",
+      },
+      {
+        validator: function (value) {
+          console.log("Validating URL:", value);
+          if (value && !URL_REGEX.test(value)) {
+            return false;
+          }
+          return true;
+        },
+        message: "Resume must be a valid URL",
+      },
+    ],
   },
 });
 

@@ -37,6 +37,10 @@ const INDUSTRY_VALUES = [
   "Consulting",
 ];
 
+// Basic URL regex pattern
+const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+
 module.exports = {
   ROLES,
   USER_ACTIVATION_STATUS,
@@ -44,4 +48,5 @@ module.exports = {
   REVIEW_STATUS,
   DOMAIN_VALUES,
   INDUSTRY_VALUES,
+  URL_REGEX
 };

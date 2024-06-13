@@ -3,16 +3,17 @@ const config = require("../config/auth.config.js");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const UserTokenCtrl = require("../controllers/userTokens.controller.js");
 
 createToken = (payload) => {
-  const { id, username, role } = payload;
+  const { _id, username, role } = payload;
 
   const jwtToken = jwt.sign(
     {
-      userId: id,
+      userId: _id,
       username,
       role,
-      payload
+      payload,
     },
     config.secret
   );
@@ -27,23 +28,29 @@ verifyToken = async (req, res, next) => {
     return res.status(403).send({ message: "No token provided!" });
   }
 
-  if (token?.startsWith("Bearer")) {
+  if (!token?.startsWith("Bearer")) {
+    return res.status(400).send({
+      message: "Invalid token.",
+    });
+  }
+
+  try {
     token = token.replace("Bearer ", "");
 
-    await jwt.verify(token, config.secret, (err, decoded) => {
+    await jwt.verify(token, config.secret, async (err, decoded) => {
       console.log(err, decoded);
       if (err) {
         return res.status(401).send({
           message: "Unauthorized!",
         });
       }
+
+      await UserTokenCtrl.isActiveToken(decoded.userId, token);
       req.user = decoded;
       next();
     });
-  } else {
-    return res.status(400).send({
-      message: "Invalid token.",
-    });
+  } catch (ex) {
+    res.status(440).send(ex.message);
   }
 };
 

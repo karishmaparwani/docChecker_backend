@@ -13,7 +13,7 @@ exports.create = (userId, username) => {
   });
 };
 
-exports.update = (expert, revData) => {
+exports.update = (expert, reviewData) => {
   return new Promise((resolve, reject) => {
     const assigned = expert.assigned + 1;
     Experts.updateOne(
@@ -24,7 +24,7 @@ exports.update = (expert, revData) => {
       },
       { new: true }
     )
-      .then((data) => resolve([data, revData]))
+      .then((data) => resolve([data, reviewData]))
       .catch((error) => reject(error));
   });
 };

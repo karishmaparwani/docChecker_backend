@@ -4,13 +4,34 @@ const { authJwt } = require("../middlewares/index");
 const { USER_ACTIVATION_STATUS } = require("../config/constants");
 const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
+const UserTokenCtrl = require("./userTokens.controller");
 
 function hashPassword(pwd) {
   return bcrypt.hashSync(pwd, 8);
 }
 
-function isValidPassword(pwd, hash) {
-  return bcrypt.compareSync(pwd, hash);
+class UserNotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UserNotFoundError";
+  }
+}
+
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UnauthorizedError";
+  }
+}
+
+function isValidPassword(pwd, data) {
+  if (!data) throw new UserNotFoundError("User Not Found");
+
+  const isValid = bcrypt.compareSync(pwd, data.password);
+
+  if (isValid) return data.toJSON();
+
+  throw new UnauthorizedError("UNAUTHORIZED");
 }
 
 const findAll = (req, res) => {
@@ -46,24 +67,28 @@ const login = (req, res) => {
     username: req.body.username,
     isActive: true,
   })
-    .select("-_id -isActive -createdAt -updatedAt -profile._id")
+    .select("-isActive -createdAt -updatedAt -profile._id")
+    .then((data) => isValidPassword(req.body.password, data))
     .then((data) => {
-      if (!data) {
-        res.status(404).send("User Not Found");
-      } else {
-        if (isValidPassword(req.body.password, data.password)) {
-          data = data.toJSON();
-          data.accessToken = authJwt.createToken(data);
+      data.accessToken = authJwt.createToken(data);
 
-          delete data.password;
+      delete data.password;
 
-          return res.status(200).send(data);
-        }
-
-        res.status(401).send({ message: "UNAUTHORIZED" });
-      }
+      return data;
     })
-    .catch((e) => res.status(400).send(e.message));
+    .then((data) =>
+      UserTokenCtrl.insertUserToken(data._id, data.accessToken, data)
+    )
+    .then((data) => res.status(200).send(data))
+    .catch((e) => {
+      if (e instanceof UserNotFoundError) {
+        res.status(404).send(e.message);
+      } else if (e instanceof UnauthorizedError) {
+        res.status(401).send(e.message);
+      } else {
+        res.status(400).send(e.message);
+      }
+    });
 };
 
 const expertSignUp = (req, res) => {
@@ -114,7 +139,9 @@ const signUp = (req, res) => {
 };
 
 const signOut = (req, res) => {
-  res.status(200).send("loggedOut");
+  UserTokenCtrl.delete(req.user.userId)
+    .then((data) => res.status(200).send(data))
+    .catch((error) => res.status(400).send(error.message));
 };
 
 const updateProfile = (req, res) => {

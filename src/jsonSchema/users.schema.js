@@ -1,7 +1,13 @@
 const Joi = require("joi");
-const { USER_ACTIVATION_STATUS, DOMAIN_VALUES, INDUSTRY_VALUES } = require("../config/constants");
+const {
+  USER_ACTIVATION_STATUS,
+  DOMAIN_VALUES,
+  INDUSTRY_VALUES,
+} = require("../config/constants");
 const DOMAIN_SCHEMA = Joi.array().items(Joi.string().valid(...DOMAIN_VALUES));
-const INDUSTRY_SCHEMA = Joi.array().items(Joi.string().valid(...INDUSTRY_VALUES));
+const INDUSTRY_SCHEMA = Joi.array().items(
+  Joi.string().valid(...INDUSTRY_VALUES)
+);
 
 exports.user = Joi.object({
   emailId: Joi.string().email().required(),
@@ -22,7 +28,8 @@ exports.moderator = Joi.object({
     linkedInUrl: Joi.string(),
     yearsOfExperience: Joi.number(),
     domainOfExpertise: DOMAIN_SCHEMA.required(),
-    industry: INDUSTRY_SCHEMA.required()
+    industry: INDUSTRY_SCHEMA.required(),
+    resume: Joi.string().required(),
   }),
 });
 
@@ -62,7 +69,7 @@ exports.UserName = Joi.object({
 
 exports.ActivationStatus = Joi.object({
   userId: Joi.string().required(),
-  status: Joi.string().required().valid('approved', 'rejected'),
+  status: Joi.string().required().valid("approved", "rejected"),
   message: Joi.string().when("status", {
     is: USER_ACTIVATION_STATUS.REJECTED,
     then: Joi.string().required(),
