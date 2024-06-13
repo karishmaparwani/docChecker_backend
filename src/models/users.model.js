@@ -14,12 +14,11 @@ mongoose.connection.on("connected", async () => {
 
   if (isFreshDatabase) {
     // Database is newly created, create the default user
-
     Users.findOne({ username: "admin" })
       .then(async (data) => {
         if (!data) {
           try {
-            // Your logic to create the default user in the 'users' collection
+            // Logic to create the default user in the 'users' collection
             const User = new Users({
               firstname: "super",
               lastname: "admin",
@@ -45,8 +44,8 @@ const ProfileSchema = new mongoose.Schema({
   yearsOfExperience: {
     type: Number,
     validate: {
-      validator: function (v) {
-        return v >= 0 && v <= 50;
+      validator: function (value) {
+        return value >= 0 && value <= 50;
       },
       message: "Experience must be between 0 and 50",
     },

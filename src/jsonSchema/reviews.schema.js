@@ -2,7 +2,7 @@ const Joi = require("joi");
 const { REVIEW_STATUS } = require("../config/constants");
 
 const AddReviewSchema = Joi.object({
-  attachment_name: Joi.string().required(),
+  attachmentName: Joi.string().required(),
   attachment: Joi.string().required(),
   relevantExp: Joi.number().min(0).max(50).required(),
   reasonForReview: Joi.string().required(),

@@ -43,7 +43,7 @@ async function getActiveReviewsByUserWithActiveComments(
         $project: {
           // _id: 1,
           docId: 1,
-          attachment_name: 1,
+          attachmentName: 1,
           attachment: 1,
           relevantExp: 1,
           reasonForReview: 1,
@@ -96,7 +96,7 @@ const insertReview = (input, expert, reqUserId) => {
   return new Promise((resolve, reject) => {
     const obj = {
       docId: generateUniqueKey(),
-      attachment_name: input.attachment_name,
+      attachmentName: input.attachmentName,
       attachment: input.attachment,
       relevantExp: input.relevantExp,
       reasonForReview: input.reasonForReview,
@@ -171,79 +171,3 @@ exports.getUserReviews = (req, res) => {
 
   return this.getReviewsByModId(req, res);
 };
-
-// function getReviewsWithActiveComments(matchingKey, value) {
-//   return new Promise((resolve, reject) => {
-//     Reviews.aggregate([
-//       // Stage 1: Match reviews created by the specified user
-//       {
-//         $match: {
-//           [matchingKey]: value,
-//           isActive: true,
-//         },
-//       },
-//       // Stage 2: Project the necessary fields and filter active comments
-//       {
-//         $project: {
-//           docId: 1,
-//           attachment_name: 1,
-//           attachment: 1,
-//           relevantExp: 1,
-//           reasonForReview: 1,
-//           description: 1,
-//           docType: 1,
-//           reviewStatus: 1,
-//           reviewerId: 1,
-//           reviewerUsername: 1,
-//           isActive: 1,
-//           createdBy: 1,
-//           updatedBy: 1,
-//           createdAt: 1,
-//           updatedAt: 1,
-//           comments: {
-//             $filter: {
-//               input: "$comments",
-//               as: "comment",
-//               cond: { $eq: ["$$comment.isActive", true] },
-//             },
-//           },
-//         },
-//       },
-//     ])
-//       .then((data) => resolve(data))
-//       .catch((error) => reject(error));
-//   });
-// }
-/**
- * 
- const expert = await findExpert();
-
- if (!expert) {
-   res
-     .status(200)
-     .send({ message: "Reviews are currently Occupied to fullest" });
- } else {
-   const expertId = expert.userId;
-   const obj = {
-     docId: generateUniqueKey(),
-     attachment_name: req.body.attachment_name,
-     attachment: req.body.attachment,
-     relevantExp: req.body.relevantExp,
-     reasonForReview: req.body.reasonForReview,
-     description: req.body.description,
-     docType: req.body.docType,
-     reviewStatus: REVIEW_STATUS.INPROGRESS,
-     reviewerId: expertId,
-     reviewerUsername: expert.username,
-   };
-
-   obj.createdBy = obj.updatedBy = req.user.userId;
-
-   const Review = new Reviews(obj);
-
-   Review.save(Review)
-     .then((data) => experts.update(expert, data))
-     .then(([data, revData]) => res.status(201).send(revData))
-     .catch((error) => res.status(400).send(error.message));
- }
- */

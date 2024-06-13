@@ -61,7 +61,7 @@ const ReviewSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    attachment_name: {
+    attachmentName: {
       type: String,
       required: true,
     },

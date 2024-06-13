@@ -110,7 +110,7 @@ definitions:
   AddReviewSchema:
     type: object
     properties: 
-      attachment_name: 
+      attachmentName: 
         type: string
         example: attachemnt name
       attachment: 
@@ -135,7 +135,7 @@ definitions:
         type: string
       docId:
         type: string
-      attachment_name:
+      attachmentName:
         type: string
       attachment:
         type: string
