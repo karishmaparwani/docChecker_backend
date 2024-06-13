@@ -1,27 +1,27 @@
 const mongoose = require("mongoose");
-const { REVIEW_STATUS } = require("../config/constants");
+const { REVIEW_STATUS, DOMAIN_VALUES } = require("../config/constants");
 
 const HighlightAreaSchema = new mongoose.Schema({
   height: {
     type: Number,
-    required: true
+    required: true,
   },
   left: {
     type: Number,
-    required: true
+    required: true,
   },
   pageIndex: {
     type: Number,
-    required: true
+    required: true,
   },
   top: {
     type: Number,
-    required: true
+    required: true,
   },
   width: {
     type: Number,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const CommentsSchema = new mongoose.Schema(
@@ -31,17 +31,17 @@ const CommentsSchema = new mongoose.Schema(
       ref: "Users",
       required: true,
     },
-    orderId:{
+    orderId: {
       type: Number,
-      required:true,
+      required: true,
     },
     comment: {
       type: String,
       required: true,
     },
-    highlightAreas:[HighlightAreaSchema],
-    quote:{
-      type:String,
+    highlightAreas: [HighlightAreaSchema],
+    quote: {
+      type: String,
       required: true,
     },
     isActive: {
@@ -87,6 +87,10 @@ const ReviewSchema = new mongoose.Schema(
     docType: {
       type: String,
       required: true,
+      enum: {
+        values: DOMAIN_VALUES,
+        message: "{VALUE} is not a valid document type", // Custom error message
+      },
     },
     reviewStatus: {
       type: String,

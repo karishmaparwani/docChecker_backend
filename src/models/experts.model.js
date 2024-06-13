@@ -39,10 +39,6 @@ ExpertsSchema.pre("save", (next) => {
   next();
 });
 
-// ExpertsSchema.pre("updateOne", (next) => {
-//   this.pending = this.assigned - this.submitted;
-//   next();
-// });
 
 const Experts = mongoose.model("Experts", ExpertsSchema);
 

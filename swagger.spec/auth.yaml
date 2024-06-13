@@ -43,7 +43,7 @@ paths:
           description: User Details with Auth token.
           content:
             application/json:
-              schema: 
+              schema:
                 type: string
         "400":
           description: User Not Found
@@ -69,8 +69,33 @@ paths:
           description: User Details with Auth token.
           content:
             application/json:
-              schema: 
+              schema:
                 type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/auth/signout":
+    get:
+      summary: Customer Signup
+      tags:
+        - Sign In
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User Details with Auth token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged Out Successfully
         "400":
           description: Bad Request
           content:
@@ -115,19 +140,8 @@ definitions:
         type: string
       accessToken:
         type: string
-      profile: 
-        type: object
-        properties:
-          profileSummary:
-            type: string
-          linkedInUrl:
-            type: string
-          yearsOfExperience:
-            type: number
-          domainOfExpertise:
-            type: string
-          industry:
-            type: string
+      profile:
+        $ref: "#/definitions/userProfileSchema"
   signUpSchema:
     type: object
     properties:
@@ -155,16 +169,4 @@ definitions:
       password:
         type: string
       profile:
-        type: object
-        properties:
-          profileSummary:
-            type: string
-          linkedInUrl:
-            type: string
-          yearsOfExperience:
-            type: number
-            example: 3
-          domainOfExpertise:
-            type: string
-          industry:
-            type: string
+        $ref: "#/definitions/userProfileSchema"

@@ -2,60 +2,93 @@ const { Users } = require("../models");
 const bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
 const { USER_ACTIVATION_STATUS } = require("../config/constants");
-const Experts = require("./experts.controller");
+const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
+const UserTokenCtrl = require("./userTokens.controller");
 
 function hashPassword(pwd) {
   return bcrypt.hashSync(pwd, 8);
 }
 
-function isValidPassword(pwd, hash) {
-  return bcrypt.compareSync(pwd, hash);
+class UserNotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UserNotFoundError";
+  }
+}
+
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UnauthorizedError";
+  }
+}
+
+function isValidPassword(pwd, data) {
+  if (!data) throw new UserNotFoundError("User Not Found");
+
+  const isValid = bcrypt.compareSync(pwd, data.password);
+
+  if (isValid) return data.toJSON();
+
+  throw new UnauthorizedError("UNAUTHORIZED");
 }
 
 const findAll = (req, res) => {
-  Users.find({})
+  const input = {
+    role: ROLES.EXPERT,
+  };
+
+  if (req.query.status) {
+    input["isActive"] = {
+      status: req.query.status,
+    };
+  }
+
+  if (req.query.actStatus) {
+    input["activationStatus.status"] = req.query.actStatus;
+  }
+
+  Users.find(input)
+    .select("-password -_id") // Exclude the password field
     .then((data) => {
-      res.status(200).send(data);
+      res.status(200).send({
+        total: data.length,
+        data,
+      });
     })
     .catch((e) => {
       res.status(400).send(e.message);
     });
 };
 
-function LoginDetails(data, token) {
-  return {
-    firstname: data.firstname,
-    lastname: data.lastname,
-    emailId: data.emailId,
-    username: data.username,
-    profile: { ...data.profile },
-    fullname: data.fullname,
-    accessToken: data.accessToken,
-    accessToken: token,
-    role:data.role,
-  };
-}
-
 const login = (req, res) => {
   Users.findOne({
     username: req.body.username,
     isActive: true,
   })
+    .select("-isActive -createdAt -updatedAt -profile._id")
+    .then((data) => isValidPassword(req.body.password, data))
     .then((data) => {
-      if (!data) {
-        res.status(404).send("User Not Found");
-      } else {
-        if (isValidPassword(req.body.password, data.password)) {
-          const token = authJwt.createToken(data);
+      data.accessToken = authJwt.createToken(data);
 
-          return res.status(200).send(LoginDetails(data.toJSON(), token));
-        }
+      delete data.password;
 
-        res.status(401).send({ message: "UNAUTHORIZED" });
-      }
+      return data;
     })
-    .catch((e) => res.status(400).send(e.message));
+    .then((data) =>
+      UserTokenCtrl.insertUserToken(data._id, data.accessToken, data)
+    )
+    .then((data) => res.status(200).send(data))
+    .catch((e) => {
+      if (e instanceof UserNotFoundError) {
+        res.status(404).send(e.message);
+      } else if (e instanceof UnauthorizedError) {
+        res.status(401).send(e.message);
+      } else {
+        res.status(400).send(e.message);
+      }
+    });
 };
 
 const expertSignUp = (req, res) => {
@@ -106,7 +139,9 @@ const signUp = (req, res) => {
 };
 
 const signOut = (req, res) => {
-  res.status(200).send("loggedOut");
+  UserTokenCtrl.delete(req.user.userId)
+    .then((data) => res.status(200).send(data))
+    .catch((error) => res.status(400).send(error.message));
 };
 
 const updateProfile = (req, res) => {
@@ -208,7 +243,7 @@ const updateUserStatus = (req, res) => {
     .then(() => {
       if (status === USER_ACTIVATION_STATUS.REJECTED) return;
 
-      return Experts.create(userId, username);
+      return ExpertsController.create(userId, username);
     })
     .then((data) =>
       res.status(201).send({
