@@ -38,7 +38,7 @@ verifyToken = async (req, res, next) => {
     token = token.replace("Bearer ", "");
 
     await jwt.verify(token, config.secret, async (err, decoded) => {
-      console.log(err, decoded);
+      // console.log(err, decoded);
       if (err) {
         return res.status(401).send({
           message: "Unauthorized!",

@@ -67,8 +67,6 @@ const ProfileSchema = new mongoose.Schema({
     validate: [
       {
         validator: function (value) {
-          console.log("Role:", this.role);
-          console.log("Resume:", value);
           if (this.role === ROLES.EXPERT && !value) {
             return false;
           }
@@ -78,7 +76,6 @@ const ProfileSchema = new mongoose.Schema({
       },
       {
         validator: function (value) {
-          console.log("Validating URL:", value);
           if (value && !URL_REGEX.test(value)) {
             return false;
           }

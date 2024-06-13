@@ -16,14 +16,10 @@ exports.isActiveToken = (userId, token, userData) => {
   return new Promise((resolve, reject) => {
     UserTokens.findOne({ userId, token, isActive: true })
       .then((data) => {
-        console.log(data);
         if (!data) reject({ message: "session-expired/logged-out" });
         else resolve(true);
       })
-      .catch((error) => {
-        console.log(error);
-        reject(error);
-      });
+      .catch((error) => reject(error));
   });
 };
 

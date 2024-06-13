@@ -50,10 +50,7 @@ exports.createComment = (req, res) => {
   getReviewByDocId(req.params.docId)
     .then((Review) => insertComment(Review, req.user.userId, req.body))
     .then((data) => res.status(201).send(data))
-    .catch((error) => {
-      console.log(error);
-      res.status(400).send(error.message);
-    });
+    .catch((error) => res.status(400).send(error.message));
 };
 
 exports.deleteComment = (req, res) => {
