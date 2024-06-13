@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
-const { REVIEW_STATUS, DOMAIN_VALUES } = require("../config/constants");
+const {
+  REVIEW_STATUS,
+  DOMAIN_VALUES,
+  URL_REGEX,
+} = require("../config/constants");
 
 const HighlightAreaSchema = new mongoose.Schema({
   height: {
@@ -61,19 +65,28 @@ const ReviewSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    attachment_name: {
+    attachmentName: {
       type: String,
       required: true,
     },
     attachment: {
       type: String,
       required: true,
+      validate: {
+        validator: function (value) {
+          if (value && !URL_REGEX.test(value)) {
+            return false;
+          }
+          return true;
+        },
+        message: "Resume must be a valid URL",
+      },
     },
     relevantExp: {
       type: Number,
       validate: {
-        validator: function (v) {
-          return v >= 0 && v <= 50;
+        validator: function (value) {
+          return value >= 0 && value <= 50;
         },
         message: "Experience must be between 0 and 50",
       },
