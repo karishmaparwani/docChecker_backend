@@ -13,8 +13,11 @@ function generateUniqueKey() {
   return modifiedNumber.toString(36).slice(0, 10);
 }
 
-async function getActiveReviewsByUserWithActiveComments(matchingKey, userId = "") {
-  try {    
+async function getActiveReviewsByUserWithActiveComments(
+  matchingKey,
+  userId = ""
+) {
+  try {
     const activeReviews = await Reviews.aggregate([
       // Stage 1: Match reviews with isActive: true and createdBy: userId
       {
@@ -109,7 +112,7 @@ const insertReview = (input, expert, reqUserId) => {
     const Review = new Reviews(obj);
 
     Review.save(Review)
-      .then((data) => resolve(data))
+      .then((data) => resolve([data, expert]))
       .catch((error) => reject(new Error(error.message)));
   });
 };
@@ -117,8 +120,8 @@ const insertReview = (input, expert, reqUserId) => {
 exports.createReview = async (req, res) => {
   findExpert()
     .then((expert) => insertReview(req.body, expert, req.user.userId))
-    .then((data) => experts.update(expert, data))
-    .then(([data, revData]) => res.status(201).send(revData))
+    .then(([data, expert]) => experts.update(expert, data))
+    .then(([data, reviewData]) => res.status(201).send(reviewData))
     .catch((error) => res.status(400).send(error.message));
 };
 
@@ -168,9 +171,6 @@ exports.getUserReviews = (req, res) => {
 
   return this.getReviewsByModId(req, res);
 };
-
-
-
 
 // function getReviewsWithActiveComments(matchingKey, value) {
 //   return new Promise((resolve, reject) => {
