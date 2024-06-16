@@ -15,9 +15,23 @@ function generateUniqueKey() {
 
 async function getActiveReviewsByUserWithActiveComments(
   matchingKey,
-  userId = ""
+  userId = "",
+  role
 ) {
+  console.log(role);
   try {
+    let localField, alias, unWindValue;
+
+    if (role === ROLES.EXPERT) {
+      localField = "createdBy";
+      alias = "userDetails";
+      unWindValue = "$userDetails";
+    }else{
+      localField = "reviewerId";
+      alias = "expertDetails";
+      unWindValue = "$expertDetails";
+    }
+
     const activeReviews = await Reviews.aggregate([
       // Stage 1: Match reviews with isActive: true and createdBy: userId
       {
@@ -38,7 +52,17 @@ async function getActiveReviewsByUserWithActiveComments(
           },
         },
       },
-      // Stage 3: Optional, project only the necessary fields
+      {
+        $lookup: {
+          from: "users",
+          localField: localField,
+          foreignField: "_id",
+          as: alias,
+        },
+      },
+      {
+        $unwind: unWindValue,
+      },
       {
         $project: {
           // _id: 1,
@@ -58,6 +82,16 @@ async function getActiveReviewsByUserWithActiveComments(
           updatedBy: 1,
           createdAt: 1,
           updatedAt: 1,
+          "userDetails._id": 1,
+          "userDetails.firstname": 1,
+          "userDetails.lastname": 1,
+          "userDetails.username": 1,
+          "userDetails.emailId": 1,
+          "expertDetails._id": 1,
+          "expertDetails.firstname": 1,
+          "expertDetails.lastname": 1,
+          "expertDetails.username": 1,
+          "expertDetails.emailId": 1,
         },
       },
     ]);
@@ -154,13 +188,21 @@ exports.submitReview = (req, res) => {
 };
 
 exports.getReviewsByCustId = (req, res) => {
-  getActiveReviewsByUserWithActiveComments("createdBy", req.user.userId)
+  getActiveReviewsByUserWithActiveComments(
+    "createdBy",
+    req.user.userId,
+    req.user.role
+  )
     .then((data) => res.status(200).send(data))
     .catch((error) => res.status(200).send(error.message));
 };
 
 exports.getReviewsByModId = (req, res) => {
-  getActiveReviewsByUserWithActiveComments("reviewerId", req.user.userId)
+  getActiveReviewsByUserWithActiveComments(
+    "reviewerId",
+    req.user.userId,
+    req.user.role
+  )
     .then((data) => res.status(200).send(data))
     .catch((error) => res.status(200).send(error.message));
 };
