@@ -76,3 +76,15 @@ exports.ActivationStatus = Joi.object({
     otherwise: Joi.forbidden(),
   }),
 });
+
+exports.forgotPassword = Joi.object({
+  emailId: Joi.string().email().required(),
+});
+
+exports.OTP = this.forgotPassword.keys({
+  otp: Joi.string().required().length(6),
+});
+
+exports.Password = Joi.object({
+  password: Joi.string().required(),
+});

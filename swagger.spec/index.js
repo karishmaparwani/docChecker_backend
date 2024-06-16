@@ -29,6 +29,10 @@ const swaggerDefinition = {
       description: "All User Login",
     },
     {
+      name: "Fotgot Password",
+      description: "Fotgot Password API's",
+    },
+    {
       name: "Sign In",
       description: "All User Signup API's to DocChecker",
     },

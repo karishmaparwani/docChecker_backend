@@ -46,6 +46,16 @@ const updComment = (Review, input, action) => {
   });
 };
 
+const insertBulkComments = (Review, comments) => {
+  return new Promise((resolve, reject) => {
+    Review.comments = comments;
+
+    Review.save()
+      .then((data) => resolve(data))
+      .catch((error) => reject(new Error(error.message)));
+  });
+};
+
 exports.createComment = (req, res) => {
   getReviewByDocId(req.params.docId)
     .then((Review) => insertComment(Review, req.user.userId, req.body))

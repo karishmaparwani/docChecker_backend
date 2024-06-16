@@ -5,6 +5,8 @@ const { USER_ACTIVATION_STATUS } = require("../config/constants");
 const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
 const UserTokenCtrl = require("./userTokens.controller");
+const MailerCtrl = require("./mailer.controller");
+const OTPCtrl = require("./otp.controller");
 
 function hashPassword(pwd) {
   return bcrypt.hashSync(pwd, 8);
@@ -69,16 +71,12 @@ const login = (req, res) => {
   })
     .select("-isActive -createdAt -updatedAt -profile._id")
     .then((data) => isValidPassword(req.body.password, data))
-    .then((data) => {
-      data.accessToken = authJwt.createToken(data);
+    .then((data) => authJwt.createToken(data))
+    .then((userData) => {
+      delete userData.password;
 
-      delete data.password;
-
-      return data;
+      return userData;
     })
-    .then((data) =>
-      UserTokenCtrl.insertUserToken(data._id, data.accessToken, data)
-    )
     .then((data) => res.status(200).send(data))
     .catch((e) => {
       if (e instanceof UserNotFoundError) {
@@ -134,6 +132,7 @@ const signUp = (req, res) => {
       // return data to next execution or next then method
       return User.save(User);
     })
+    .then((data) => MailerCtrl.sendCustomerSignUpEmail(data))
     .then((data) => res.status(201).send(data))
     .catch((error) => res.status(400).send(error.message));
 };
@@ -255,9 +254,93 @@ const updateUserStatus = (req, res) => {
     .catch((error) => res.status(400).send({ message: error.message }));
 };
 
-const updatePassword = (req, res) => {};
+const updatePassword = (req, res) => {
+  Users.findOneAndUpdate(
+    { emailId: req.user.emailId, isActive: true },
+    {
+      $set: {
+        password: hashPassword(req.body.password),
+        isOtpVerified: false,
+      },
+    },
+    { new: true, runValidators: true, findOneAndModify: false }
+  )
+    .then((data) => UserTokenCtrl.delete(data._id))
+    .then(() =>
+      res.status(200).send({ message: "Password Updated Successfully" })
+    )
+    .catch((error) => res.status(400).send(error.message));
+};
 
 const updateResume = (req, res) => {};
+
+const verifyEmail = (req, res) => {
+  Users.findOneAndUpdate(
+    { emailId: req.body.emailId, isActive: true },
+    {
+      $set: {
+        otp: OTPCtrl.generateOTP(),
+      },
+    },
+    { new: true, runValidators: true, findOneAndModify: false }
+  )
+    .then((data) => {
+      return MailerCtrl.sendEmailVerificationMail(data.emailId, otp);
+    })
+    .then((data) => res.status(200).send(data))
+    .catch((error) => res.status(400).send(error));
+};
+
+const forgotPassword = (req, res) => {
+  Users.findOneAndUpdate(
+    { emailId: req.body.emailId, isActive: true },
+    {
+      $set: {
+        otp: OTPCtrl.generateOTP(6),
+        isOtpVerified: false,
+      },
+    },
+    { new: true, runValidators: true, findOneAndModify: false }
+  )
+    .then((data) => {
+      console.log(data);
+      if (!data) {
+        return res.status(404).send({ message: "EmailId Doesn't Exist" });
+      }
+
+      return MailerCtrl.sendForgotPasswordEmail(data.emailId, data.otp);
+    })
+    .then((info) => res.status(200).send({ message: "Email Sent Successfully" }))
+    .catch((error) => res.status(400).send(error.message));
+};
+
+const verifyOTP = (req, res) => {
+  Users.findOneAndUpdate(
+    { emailId: req.body.emailId, otp: req.body.otp, isOtpVerified: false },
+    {
+      $set: {
+        isOtpVerified: true,
+      },
+    },
+    { new: true, runValidators: true, findOneAndModify: false }
+  )
+    .then(async (data) => {
+      console.log(data);
+      if (!data) {
+        throw new Error("Invalid OTP");
+      }
+
+      return authJwt.createToken(data);
+    })
+    .then((data) =>
+      res.status(200).send({
+        status: true,
+        accessToken: data.accessToken,
+        message: `OTP Verified`,
+      })
+    )
+    .catch((error) => res.status(400).send(error.message));
+};
 
 exports.findAll = findAll;
 exports.login = login;
@@ -268,3 +351,6 @@ exports.updateProfile = updateProfile;
 exports.updateUserName = updateUserName;
 exports.updateUserStatus = updateUserStatus;
 exports.deleteUser = deleteUser;
+exports.updatePassword = updatePassword;
+exports.forgotPassword = forgotPassword;
+exports.verifyOTP = verifyOTP;

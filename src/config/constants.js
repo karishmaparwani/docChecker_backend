@@ -20,7 +20,7 @@ const DOMAIN_VALUES = [
   "Product Requirement Document",
   "Resume",
   "LOR",
-  "Essay"
+  "Essay",
 ];
 
 const INDUSTRY_VALUES = [
@@ -34,6 +34,11 @@ const INDUSTRY_VALUES = [
 // Basic URL regex pattern
 const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
+const EMAIL_SUB = {
+  CUST_SIGNUP: "Welcome to DocChecker!",
+  FOTGOT_PWD: "Password Reset Request",
+  VERIFY_EMAIL: "Verifiy Your Email with DocChecker",
+};
 
 module.exports = {
   ROLES,
@@ -41,5 +46,6 @@ module.exports = {
   REVIEW_STATUS,
   DOMAIN_VALUES,
   INDUSTRY_VALUES,
-  URL_REGEX
+  URL_REGEX,
+  EMAIL_SUB,
 };

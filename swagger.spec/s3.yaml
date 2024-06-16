@@ -4,8 +4,8 @@ paths:
       summary: Uploads a file.
       tags:
         - Upload Document
-      security:
-        - bearerAuth: []
+      # security:
+      #   - bearerAuth: []
       consumes:
         - multipart/form-data
       requestBody:

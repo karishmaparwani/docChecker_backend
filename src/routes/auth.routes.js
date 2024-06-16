@@ -4,7 +4,7 @@ const ConsantsCtrl = require('../controllers/constants.controller');
 const { verifyToken } = require('../middlewares/authJwt');
 const { validateBodyParams } = require('../middlewares').jsonValidator;
 const { checkDuplicateUsernameOrEmail, checkDuplicateUsername } = require('../middlewares').verifySignUp;
-const { user, loginSchema, moderator } = require('../jsonSchema').user;
+const { user, loginSchema, moderator, forgotPassword, OTP, Password } = require('../jsonSchema').user;
 
 module.exports = function (app) {
   // app.post("/api/auth/signup", User.create);
@@ -20,4 +20,10 @@ module.exports = function (app) {
   app.get("/api/domains", ConsantsCtrl.docTypes);
   
   app.get("/api/industries", ConsantsCtrl.industries);
+
+  app.post("/api/auth/forgotPassword", validateBodyParams(forgotPassword), User.forgotPassword)
+  
+  app.post("/api/auth/verifyOTP", validateBodyParams(OTP), User.verifyOTP)
+
+  app.post("/api/auth/updatePassword", [verifyToken, validateBodyParams(Password)], User.updatePassword)
 };
