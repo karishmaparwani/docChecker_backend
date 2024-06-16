@@ -129,6 +129,14 @@ const UserSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
     },
+    otp: {
+      type: String,
+      deafult: null,
+    },
+    isOtpVerified: {
+      type: String,
+      defailt: false,
+    },
   },
   {
     timestamps: true,

@@ -5,20 +5,64 @@ const User = db.user;
 const Role = db.role;
 const UserTokenCtrl = require("../controllers/userTokens.controller.js");
 
-createToken = (payload) => {
-  const { _id, username, role } = payload;
+createJWTToken = async (payload) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const { _id, username, role } = payload;
 
+      const jwtToken = jwt.sign(
+        {
+          userId: _id,
+          username,
+          role,
+          payload,
+        },
+        config.secret
+      );
+
+      resolve(jwtToken);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+createToken = async (payload) => {
+  // return new Promise((resolve, reject) => {
+  //   createJWTToken(payload)
+  //     .then((token) =>
+  //       UserTokenCtrl.insertUserToken(payload._id, token, {
+  //         ...payload,
+  //         accessToken: token,
+  //       })
+  //     )
+  //     .then((userData) => {
+  //       resolve(userData)
+  //     })
+  //     .catch((error) => reject(error));
+  // });
+
+  const { _id, username, role, emailId } = payload;
   const jwtToken = jwt.sign(
     {
       userId: _id,
       username,
+      emailId,
       role,
       payload,
     },
     config.secret
   );
 
-  return jwtToken;
+  payload.accessToken = jwtToken;
+
+  await UserTokenCtrl.insertUserToken(
+    payload._id,
+    payload.accessToken,
+    payload
+  );
+
+  return payload;
 };
 
 verifyToken = async (req, res, next) => {
