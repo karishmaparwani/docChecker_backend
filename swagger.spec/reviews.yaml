@@ -32,9 +32,10 @@ paths:
                 example: Bad Request
   "/review/{docId}":
     get:
-      summary: Customer Review Upload
+      summary: Get Review Based on Document Id
       tags:
         - Customer
+        - Expert
       security:
         - bearerAuth: []
       parameters:

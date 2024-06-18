@@ -1,10 +1,12 @@
 const { Reviews } = require("../models");
 const mongoose = require("mongoose");
 
-const getReviewByDocId = (docId) => {
+const getReviewByDocId = (docId, reviewerId) => {
   return new Promise((resolve, reject) => {
     Reviews.findOne({
       docId,
+      reviewerId,
+      isActive: true,
     })
       .then((data) => {
         if (data) resolve(data);
@@ -46,18 +48,8 @@ const updComment = (Review, input, action) => {
   });
 };
 
-const insertBulkComments = (Review, comments) => {
-  return new Promise((resolve, reject) => {
-    Review.comments = comments;
-
-    Review.save()
-      .then((data) => resolve(data))
-      .catch((error) => reject(new Error(error.message)));
-  });
-};
-
 exports.createComment = (req, res) => {
-  getReviewByDocId(req.params.docId)
+  getReviewByDocId(req.params.docId, req.user.userId)
     .then((Review) => insertComment(Review, req.user.userId, req.body))
     .then((data) => res.status(201).send(data))
     .catch((error) => res.status(400).send(error.message));
@@ -66,7 +58,7 @@ exports.createComment = (req, res) => {
 exports.deleteComment = (req, res) => {
   const { docId, commentId } = req.params;
 
-  getReviewByDocId(docId)
+  getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, { commentId }, "DELETE"))
     .then(() =>
       res.status(200).send({ message: "Comment Deleted Successfully." })
@@ -78,10 +70,34 @@ exports.updateComment = (req, res) => {
   const { docId, commentId } = req.params;
   const inputJson = { commentId, comment: req.body.comment };
 
-  getReviewByDocId(docId)
+  getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, inputJson, "UPDATE"))
     .then(() =>
       res.status(200).send({ message: "Comment Updated Successfully." })
     )
+    .catch((error) => res.status(400).send(error.message));
+};
+
+
+exports.addBulkComments = (req, res) => {
+  const commentsInp = req.body.comments.map((comment) => {
+    comment.orderId = comment.id;
+    comment.commenterId = req.user.userId;
+
+    delete comment.id;
+
+    return comment;
+  });
+
+  Reviews.findOneAndUpdate(
+    { docId: req.params.docId },
+    {
+      $set: {
+        comments: commentsInp,
+      },
+    },
+    { new: true, runValidators: true }
+  )
+    .then((data) => res.status(200).send(data))
     .catch((error) => res.status(400).send(error.message));
 };
