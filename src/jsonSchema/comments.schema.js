@@ -15,6 +15,10 @@ exports.Comment = Joi.object({
   quote: Joi.string().required(),
 });
 
+exports.CreateBulkComments = Joi.object({
+  comments: Joi.array().items(this.Comment).required()
+})
+
 exports.UpdateComment = Joi.object({
     comment:Joi.string().required()
 })

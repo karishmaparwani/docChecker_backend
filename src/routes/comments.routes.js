@@ -8,7 +8,7 @@ const {
 } = require("../middlewares/schemaValidator");
 const { comments, reviews } = require("../jsonSchema");
 
-const { Comment, isValidDocIdCommId, UpdateComment } = comments;
+const { Comment, isValidDocIdCommId, UpdateComment, CreateBulkComments } = comments;
 const { GetReviewByDocId } = reviews;
 module.exports = function (app) {
   // app.post("/api/auth/signup", User.create);
@@ -23,7 +23,7 @@ module.exports = function (app) {
     ],
     Comments.createComment
   );
-  
+
   app.put(
     "/api/review/:docId/comment/:commentId",
     [
@@ -43,5 +43,16 @@ module.exports = function (app) {
       validatePathParams(isValidDocIdCommId),
     ],
     Comments.deleteComment
+  );
+
+  app.put(
+    "/api/review/:docId/comments",
+    [
+      verifyToken,
+      verifyRole([ROLES.EXPERT]),
+      validatePathParams(GetReviewByDocId),
+      validateBodyParams(CreateBulkComments),
+    ],
+    Comments.addBulkComments
   );
 };

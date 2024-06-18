@@ -26,7 +26,7 @@ async function getActiveReviewsByUserWithActiveComments(
       localField = "createdBy";
       alias = "userDetails";
       unWindValue = "$userDetails";
-    }else{
+    } else {
       localField = "reviewerId";
       alias = "expertDetails";
       unWindValue = "$expertDetails";
@@ -76,7 +76,7 @@ async function getActiveReviewsByUserWithActiveComments(
           reviewStatus: 1,
           reviewerId: 1,
           reviewerUsername: 1,
-          comments: 1,
+          // comments: 1,
           // isActive: 1,
           createdBy: 1,
           updatedBy: 1,
@@ -160,10 +160,22 @@ exports.createReview = async (req, res) => {
 };
 
 exports.getReviewByDocId = (req, res) => {
-  Reviews.findOne({
+  const query = {
     docId: req.params.docId,
-  })
-    .then((data) => res.status(200).send(data.toJSON()))
+    isActive: true,
+  };
+  
+  query[req.user.role === ROLES.EXPERT ? "reviewerId" : "createdBy"] =
+    req.user.userId;
+
+  console.log(query);
+  Reviews.findOne(query)
+    .then((data) => {
+      if (!data)
+        throw new Error("Review Not found with id: ", req.params.docId);
+
+      res.status(200).send(data.toJSON());
+    })
     .catch((error) => res.status(400).send({ message: error.message }));
 };
 
