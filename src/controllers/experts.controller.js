@@ -46,7 +46,7 @@ exports.reviewSubmitted = (userId, revData) => {
           }
         );
       })
-      .then((data) => resolve([data, revData]))
+      .then((data) => resolve(revData))
       .catch((error) => reject(error));
   });
 };

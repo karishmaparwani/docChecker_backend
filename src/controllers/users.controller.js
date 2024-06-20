@@ -144,29 +144,45 @@ const signOut = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  Users.updateOne(
-    { username: req.params.username },
-    {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      profile: {
-        profileSummary: req.body.profileSummary,
-        linkedInUrl: req.body.linkedInUrl,
-        yearsOfExperience: req.body.yearsOfExperience,
-        domainOfExpertise: req.body.domainOfExpertise,
-        industry: req.body.industry,
-      },
-    },
-    {
-      new: true,
-    }
-  )
+  const updateObj = {
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    username: req.body.username,
+    emailId: req.body.emailId,
+  };
+
+  if (req.user.role === ROLES.EXPERT) {
+    updateObj["profile"] = { ...req.body.profile };
+  }
+
+  Users.findOne({ username: req.body.username, _id: { $ne: req.user.userId } })
+    .then((data) => {
+      if (data) {
+        throw new Error("Username already exists");
+      }
+
+      return Users.findOne({
+        emailId: req.body.emailId,
+        _id: { $ne: req.user.userId },
+      });
+    })
+    .then((data) => {
+      if (data) {
+        throw new Error("EmailId is already in use");
+      }
+
+      return Users.updateOne({ _id: req.user.userId }, updateObj, {
+        new: true,
+      });
+    })
     .then((data) => {
       if (data.acknowledged) {
         res.status(200).send({
           message: "Record Updated Successfully",
           data,
         });
+      } else {
+        throw new Error("Error occured while updating user");
       }
     })
     .catch((error) => {
@@ -310,7 +326,9 @@ const forgotPassword = (req, res) => {
 
       return MailerCtrl.sendForgotPasswordEmail(data.emailId, data.otp);
     })
-    .then((info) => res.status(200).send({ message: "Email Sent Successfully" }))
+    .then((info) =>
+      res.status(200).send({ message: "Email Sent Successfully" })
+    )
     .catch((error) => res.status(400).send(error.message));
 };
 
