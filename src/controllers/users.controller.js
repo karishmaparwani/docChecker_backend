@@ -149,6 +149,8 @@ const updateProfile = (req, res) => {
     lastname: req.body.lastname,
     username: req.body.username,
     emailId: req.body.emailId,
+    image: req.body.image,
+    
   };
 
   if (req.user.role === ROLES.EXPERT) {
