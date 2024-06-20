@@ -14,11 +14,24 @@ const GetReviewByDocId = Joi.object({
   docId: Joi.string().required().length(10),
 });
 
+const highlightAreaSchema = Joi.object({
+  height: Joi.number().required(),
+  left: Joi.number().required(),
+  pageIndex: Joi.number().integer().required(),
+  top: Joi.number().required(),
+  width: Joi.number().required(),
+});
+
+const Comment = Joi.object({
+  id: Joi.number().required(),
+  comment: Joi.string().required(),
+  highlightAreas: Joi.array().items(highlightAreaSchema).required(),
+  quote: Joi.string().required(),
+});
+
 const SubmitReview = Joi.object({
   docId: Joi.string().required(),
-  // status: Joi.string()
-  //   .valid(REVIEW_STATUS.INPROGRESS, REVIEW_STATUS.COMPLETED)
-  //   .required(),
+  comments: Joi.array().items(Comment).required()
 });
 
 module.exports = {

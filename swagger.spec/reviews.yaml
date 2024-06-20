@@ -93,6 +93,10 @@ paths:
                 docId:
                   type: string
                   example: 3ny9b4lab1
+                comments:
+                  type: array
+                  items:
+                    $ref: "#/definitions/CommentsInputSchema"
       responses:
         "200":
           description: Submitted Review Details
