@@ -137,6 +137,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       defailt: false,
     },
+    image: {
+      type: String,
+      required: true,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -43,6 +43,7 @@ const BASE_SCHEMA = Joi.object({
   lastname: Joi.string().required(),
   username: Joi.string().required(),
   emailId: Joi.string().email().required(),
+  image: Joi.string().optional(),
 });
 
 exports.updateUserProfile = BASE_SCHEMA;
@@ -54,7 +55,7 @@ exports.updateExpertProfile = BASE_SCHEMA.keys({
     yearsOfExperience: Joi.number().required(),
     domainOfExpertise: DOMAIN_SCHEMA.required(),
     industry: INDUSTRY_SCHEMA.required(),
-    resume: Joi.string().required()
+    resume: Joi.string().required(),
   }),
 });
 

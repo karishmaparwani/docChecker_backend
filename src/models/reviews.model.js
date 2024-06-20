@@ -79,7 +79,7 @@ const ReviewSchema = new mongoose.Schema(
           }
           return true;
         },
-        message: "Resume must be a valid URL",
+        message: "Document must be a valid URL",
       },
     },
     relevantExp: {
