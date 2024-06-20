@@ -164,7 +164,7 @@ exports.getReviewByDocId = (req, res) => {
     docId: req.params.docId,
     isActive: true,
   };
-  
+
   query[req.user.role === ROLES.EXPERT ? "reviewerId" : "createdBy"] =
     req.user.userId;
 
@@ -180,6 +180,15 @@ exports.getReviewByDocId = (req, res) => {
 };
 
 exports.submitReview = (req, res) => {
+  const commentsInp = req.body.comments.map((comment) => {
+    comment.orderId = comment.id;
+    comment.commenterId = req.user.userId;
+
+    delete comment.id;
+
+    return comment;
+  });
+
   Reviews.findOneAndUpdate(
     {
       docId: req.body.docId,
@@ -189,13 +198,14 @@ exports.submitReview = (req, res) => {
     {
       $set: {
         reviewStatus: REVIEW_STATUS.COMPLETED,
+        comments: commentsInp,
         updatedBy: req.user.userId,
       },
     },
     { new: true, runValidators: true, findOneAndModify: false }
   )
     .then((data) => experts.reviewSubmitted(req.user.userId, data))
-    .then(([expert, revData]) => res.status(200).send(revData))
+    .then((revData) => res.status(200).send(revData))
     .catch((error) => res.status(400).send({ message: error.message }));
 };
 
