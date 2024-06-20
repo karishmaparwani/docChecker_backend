@@ -4,7 +4,7 @@ const {
   validateBodyParams,
   validatePathParams,
 } = require("../middlewares/schemaValidator");
-const { checkDuplicateUsername } = require("../middlewares/verifySignUp");
+const { checkDuplicateUsername, checkDuplicateUsernameOrEmail } = require("../middlewares/verifySignUp");
 const { updateExpertProfile, updateUserProfile, UserName, ActivationStatus } =
   require("../jsonSchema").user;
 
@@ -18,23 +18,23 @@ module.exports = function (app) {
   app.get("/api/users",[verifyToken, verifyRole([ROLES.ADMIN])], User.findAll);
 
   app.put(
-    "/api/updateExpertProfile/:username",
+    "/api/updateExpertProfile",
     [
       verifyToken,
       verifyRole([ROLES.EXPERT]),
       validateBodyParams(updateExpertProfile),
-      validatePathParams(UserName),
+      // validatePathParams(UserName),
     ],
     User.updateProfile
   );
 
   app.put(
-    "/api/updateCustomerProfile/:username",
+    "/api/updateCustomerProfile",
     [
       verifyToken,
       verifyRole([ROLES.CUSTOMER]),
       validateBodyParams(updateUserProfile),
-      validatePathParams(UserName),
+      // validatePathParams(UserName),
     ],
     User.updateProfile
   );
