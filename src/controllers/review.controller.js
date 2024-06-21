@@ -87,11 +87,13 @@ async function getActiveReviewsByUserWithActiveComments(
           "userDetails.lastname": 1,
           "userDetails.username": 1,
           "userDetails.emailId": 1,
+          "expertDetails.image": 1,
           "expertDetails._id": 1,
           "expertDetails.firstname": 1,
           "expertDetails.lastname": 1,
           "expertDetails.username": 1,
           "expertDetails.emailId": 1,
+          "expertDetails.image": 1,
         },
       },
     ]);
