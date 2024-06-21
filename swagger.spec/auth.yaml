@@ -326,15 +326,43 @@ definitions:
   ExpertSignUpSchema:
     type: object
     properties:
-      emailId:
-        type: string
       firstname:
         type: string
       lastname:
         type: string
       username:
         type: string
+      emailId:
+        type: string
       password:
         type: string
       profile:
-        $ref: "#/definitions/userProfileSchema"
+        type: object
+        properties:
+          profileSummary:
+            type: string
+          linkedInUrl:
+            type: string
+          yearsOfExperience:
+            type: number
+          domainOfExpertise:
+            type: array
+            items:
+              type: string
+              enum:
+                - Product Requirement Document
+                - Resume
+                - LOR
+                - Essay
+          industry:
+            type: array
+            items:
+              type: string
+              enum:
+                - Software
+                - Hardware
+                - Pharmaceutical
+                - Banking
+                - Consulting
+          resume:
+            type: string

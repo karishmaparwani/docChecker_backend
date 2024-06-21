@@ -154,6 +154,8 @@ definitions:
         type: string
       emailId:
         type: string
+      image:
+        type: string
       profile:
         type: object
         properties:
