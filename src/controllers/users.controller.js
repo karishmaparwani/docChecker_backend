@@ -150,7 +150,6 @@ const updateProfile = (req, res) => {
     username: req.body.username,
     emailId: req.body.emailId,
     image: req.body.image,
-    
   };
 
   if (req.user.role === ROLES.EXPERT) {
@@ -323,7 +322,7 @@ const forgotPassword = (req, res) => {
     .then((data) => {
       console.log(data);
       if (!data) {
-        return res.status(404).send({ message: "EmailId Doesn't Exist" });
+        throw new Error("EmailId Doesn't Exist");
       }
 
       return MailerCtrl.sendForgotPasswordEmail(data.emailId, data.otp);
