@@ -173,14 +173,14 @@ const updateProfile = (req, res) => {
         throw new Error("EmailId is already in use");
       }
 
-      return Users.updateOne({ _id: req.user.userId }, updateObj, {
+      return Users.findOneAndUpdate({ _id: req.user.userId }, updateObj, {
         new: true,
       });
     })
     .then((data) => {
-      if (data.acknowledged) {
+      if (data) {
         res.status(200).send({
-          message: "Record Updated Successfully",
+          message: "Updated Successfully",
           data,
         });
       } else {
